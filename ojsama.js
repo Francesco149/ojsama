@@ -215,7 +215,7 @@ if (typeof exports !== "undefined") {
 
 osu.VERSION_MAJOR = 1;
 osu.VERSION_MINOR = 0;
-osu.VERSION_PATCH = 1;
+osu.VERSION_PATCH = 2;
 
 // internal utilities
 // ----------------------------------------------------------------
@@ -1316,7 +1316,7 @@ std_diff.prototype._normalizer_vector = function(circlesize)
             / 50.0;
     }
 
-    return new Array(2).fill(scaling_factor);
+    return [scaling_factor,scaling_factor];
 }
 
 // _(internal)_
