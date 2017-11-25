@@ -215,7 +215,7 @@ if (typeof exports !== "undefined") {
 
 osu.VERSION_MAJOR = 1;
 osu.VERSION_MINOR = 0;
-osu.VERSION_PATCH = 0;
+osu.VERSION_PATCH = 1;
 
 // internal utilities
 // ----------------------------------------------------------------
