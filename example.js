@@ -2,9 +2,9 @@ var readline = require("readline");
 var osu = require("./ojsama");
 
 var mods = osu.modbits.none;
-var acc_percent = undefined;
-var combo = undefined;
-var nmiss = undefined;
+var acc_percent;
+var combo;
+var nmiss;
 
 // get mods, acc, combo, misses from command line arguments
 // format: +HDDT 95% 300x 1m
