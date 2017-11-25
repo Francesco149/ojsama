@@ -5,6 +5,8 @@
 this is free and unencumbered software released into the public
 domain. refer to the attached UNLICENSE or http://unlicense.org/
 
+[![Build Status](https://travis-ci.org/Francesco149/ojsama.svg?branch=master)](https://travis-ci.org/Francesco149/ojsama)
+
 pure javascript implementation of
 https://github.com/Francesco149/oppai-ng intended to be easier
 to use and set up for js developers as well as more portable
