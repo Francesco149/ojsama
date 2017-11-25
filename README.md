@@ -5,7 +5,9 @@
 this is free and unencumbered software released into the public
 domain. refer to the attached UNLICENSE or http://unlicense.org/
 
-[![Build Status](https://travis-ci.org/Francesco149/ojsama.svg?branch=master)](https://travis-ci.org/Francesco149/ojsama)
+[![Build Status](
+https://travis-ci.org/Francesco149/ojsama.svg?branch=master)](
+https://travis-ci.org/Francesco149/ojsama)
 
 pure javascript implementation of
 https://github.com/Francesco149/oppai-ng intended to be easier
@@ -116,7 +118,9 @@ for (var i = 2; i < argv.length; ++i)
 }
 
 var parser = new osu.parser();
-readline.createInterface({input: process.stdin, terminal: false})
+readline.createInterface({
+  input: process.stdin, terminal: false
+})
 .on("line", parser.feed_line.bind(parser))
 .on("close", function() {
     var map = parser.map;
