@@ -26,13 +26,12 @@ since this is a single-file library, you can just drop the file
 into your project:
 ```
 cd my/project
-curl https://waa.ai/ojsama.js -O
+curl https://waa.ai/ojsama > ojsama.js
 ```
 
 or include it directly in a html page:
 ```
-<script type="text/javascript"
-  src="https://waa.ai/ojsama.min.js"></script>
+<script type="text/javascript" src="ojsama.min.js"></script>
 ```
 
 it's also available as a npm package:
@@ -185,8 +184,7 @@ usage (in the browser)
 <html>
 <head>
   <meta charset="utf-8" />
-  <script type="text/javascript"
-    src="https://waa.ai/ojsama.min.js"></script>
+  <script type="text/javascript" src="ojsama.min.js"></script>
   <script type="text/javascript">
   function load_file()
   {
