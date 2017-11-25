@@ -40,7 +40,7 @@ npm install ojsama
 ```
 
 you can find full documentation of the code at
-http://hnng.moe/stuff/ojsama.html or simply 
+http://hnng.moe/stuff/ojsama.html or simply read ojsama.js
 
 usage (nodejs):
 ----------------------------------------------------------------
