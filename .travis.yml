@@ -7,8 +7,6 @@ node_js:
   - "5"
   - "4"
   - "lts/*"
-before_install:
-  - npm install -g npm
 matrix:
   include:
     - os: linux
