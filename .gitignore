@@ -3,4 +3,8 @@
 tags
 /test_suite
 /test_suite.json
+/package-lock.json
 /docs
+/node_modules
+*.tar.xz
+*.tar.xz.*
