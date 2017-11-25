@@ -12,18 +12,18 @@
 // ----------------------------------------------------------------
 // since this is a single-file library, you can just drop the file
 // into your project:
-// ```
+// ```sh
 // cd my/project
 // curl https://waa.ai/ojsama > ojsama.js
 // ```
 //
 // or include it directly in a html page:
-// ```
+// ```html
 // <script type="text/javascript" src="ojsama.min.js"></script>
 // ```
 //
 // it's also available as a npm package:
-// ```
+// ```sh
 // npm install ojsama
 // ```
 //
@@ -34,7 +34,7 @@
 // ----------------------------------------------------------------
 // (change ./ojsama to ojsama if you installed through npm)
 //
-// ```
+// ```js
 // var readline = require("readline");
 // var osu = require("./ojsama");
 //
@@ -48,14 +48,14 @@
 // });
 // ```
 //
-// ```
+// ```sh
 // $ curl https://osu.ppy.sh/osu/67079 | node minexample.js
 // 133.24 pp (36.23 aim, 40.61 speed, 54.42 acc)
 // ```
 //
 // advanced usage (nodejs with acc, mods, combo...):
 // ----------------------------------------------------------------
-// ```
+// ```js
 // var readline = require("readline");
 // var osu = require("./ojsama");
 //
@@ -118,7 +118,7 @@
 // });
 // ```
 //
-// ```
+// ```sh
 // $ curl https://osu.ppy.sh/osu/67079 | node example.js
 // TERRA - Tenjou no Hoshi ~Reimeiki~ [BMax] mapped by ouranhshc
 //
@@ -143,7 +143,7 @@
 //
 // usage (in the browser)
 // ----------------------------------------------------------------
-// ```
+// ```html
 // <!DOCTYPE html>
 // <html>
 // <head>
@@ -182,7 +182,7 @@
 // ----------------------------------------------------------------
 // this is around 50-60% slower than the C implementation and uses
 // ~10 times more memory.
-// ```
+// ```sh
 // $ busybox time -v node --use_strict test.js
 // ...
 // User time (seconds): 16.58
