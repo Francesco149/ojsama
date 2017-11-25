@@ -1,0 +1,6 @@
+*.swp
+/out/*
+tags
+/test_suite
+/test_suite.json
+/docs

@@ -1,0 +1,23 @@
+language: node_js
+node_js:
+  - "node"
+  - "iojs"
+  - "7"
+  - "6"
+  - "5"
+  - "4"
+  - "lts/*"
+before_install:
+  - npm install -g npm
+matrix:
+  include:
+    - os: linux
+      dist: precise
+    - os: linux
+      dist: trusty
+    - os: osx
+cache:
+    directories:
+        - test_suite
+        - node_modules
+
