@@ -62,9 +62,9 @@
 // var osu = require("./ojsama");
 //
 // var mods = osu.modbits.none;
-// var acc_percent = undefined;
-// var combo = undefined;
-// var nmiss = undefined;
+// var acc_percent;
+// var combo;
+// var nmiss;
 //
 // // get mods, acc, combo, misses from command line arguments
 // // format: +HDDT 95% 300x 1m
@@ -215,7 +215,7 @@ if (typeof exports !== "undefined") {
 
 osu.VERSION_MAJOR = 1;
 osu.VERSION_MINOR = 0;
-osu.VERSION_PATCH = 2;
+osu.VERSION_PATCH = 3;
 
 // internal utilities
 // ----------------------------------------------------------------
