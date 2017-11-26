@@ -215,7 +215,7 @@ if (typeof exports !== "undefined") {
 
 osu.VERSION_MAJOR = 1;
 osu.VERSION_MINOR = 0;
-osu.VERSION_PATCH = 3;
+osu.VERSION_PATCH = 4;
 
 // internal utilities
 // ----------------------------------------------------------------
@@ -1439,7 +1439,13 @@ diff.prototype.calc = function(params)
 function std_accuracy(values)
 {
     this.nmiss = values.nmiss || 0;
-    this.n300 = values.n300 || -1;
+
+    if (values.n300 === undefined) {
+        this.n300 = -1;
+    } else {
+        this.n300 = values.n300;
+    }
+
     this.n100 = values.n100 || 0;
     this.n50 = values.n50 || 0;
 
@@ -1745,7 +1751,7 @@ std_ppv2.prototype.calc = function(params)
         var nspinners = nobjects - nsliders - ncircles;
 
         real_acc = new std_accuracy({
-            n300: n300 - nsliders - nspinners,
+            n300: Math.max(0, n300 - nsliders - nspinners),
             n100: n100,
             n50: n50,
             nmiss: nmiss
