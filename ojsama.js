@@ -1543,7 +1543,7 @@ function std_ppv2()
 }
 
 // metaparams:
-// map, stars
+// map, stars, acc_percent
 //
 // params:
 // aim_stars, speed_stars, max_combo, nsliders, ncircles,
@@ -1560,6 +1560,9 @@ function std_ppv2()
 //
 // if map is defined and stars is not defined, a new difficulty
 // calculator will be created on the fly to compute stars for map
+//
+// if acc_percent is defined, n300, n100, n50 will be automatically
+// calculated to be as close as possible to this value
 
 std_ppv2.prototype.calc = function(params)
 {
