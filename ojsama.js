@@ -215,7 +215,7 @@ if (typeof exports !== "undefined") {
 
 osu.VERSION_MAJOR = 1;
 osu.VERSION_MINOR = 0;
-osu.VERSION_PATCH = 4;
+osu.VERSION_PATCH = 5;
 
 // internal utilities
 // ----------------------------------------------------------------
@@ -783,11 +783,14 @@ parser.prototype._objects = function()
 // ----------------------------------------------------------------
 
 // mods bitmask constants
+// NOTE: td is touch device, but it's also the value for the
+// legacy no video mod
 
 var modbits = {
     nomod: 0,
     nf: 1<<0,
     ez: 1<<1,
+    td: 1<<2,
     hd: 1<<3,
     hr: 1<<4,
     dt: 1<<6,
@@ -1106,6 +1109,9 @@ std_diff.prototype.calc = function(params)
 
     this.speed = Math.sqrt(this.speed) * STAR_SCALING_FACTOR;
     this.aim = Math.sqrt(this.aim) * STAR_SCALING_FACTOR;
+    if (mods & modbits.td) {
+        this.aim = Math.pow(this.aim, 0.8);
+    }
 
     // total stars mixes speed and aim in such a way that
     // heavily aim or speed focused maps get a bonus
