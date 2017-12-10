@@ -1322,7 +1322,7 @@ std_diff.prototype._normalizer_vector = function(circlesize)
             / 50.0;
     }
 
-    return [scaling_factor,scaling_factor];
+    return [scaling_factor, scaling_factor];
 }
 
 // _(internal)_
