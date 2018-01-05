@@ -215,7 +215,7 @@ if (typeof exports !== "undefined") {
 
 osu.VERSION_MAJOR = 1;
 osu.VERSION_MINOR = 0;
-osu.VERSION_PATCH = 9;
+osu.VERSION_PATCH = 10;
 
 // internal utilities
 // ----------------------------------------------------------------
@@ -561,7 +561,7 @@ parser.prototype.feed_line = function(line)
     if (line.startsWith("["))
     {
         // on old maps there's no ar and ar = od
-        if (this.section == "Difficulty" && this.map.ar == null) {
+        if (this.section == "Difficulty" && this.map.ar === null) {
             this.map.ar = this.map.od;
         }
 
