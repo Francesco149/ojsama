@@ -215,7 +215,7 @@ if (typeof exports !== "undefined") {
 
 osu.VERSION_MAJOR = 1;
 osu.VERSION_MINOR = 0;
-osu.VERSION_PATCH = 8;
+osu.VERSION_PATCH = 9;
 
 // internal utilities
 // ----------------------------------------------------------------
@@ -372,7 +372,8 @@ beatmap.prototype.reset = function()
     this.creator = "";
     this.version = "";
 
-    this.cs = this.ar = this.od = this.hp = 5.0;
+    this.ar = null;
+    this.cs = this.od = this.hp = 5.0;
     this.sv = this.tick_rate = 1.0;
 
     this.ncircles = this.nsliders = this.nspinners = 0;
@@ -557,7 +558,13 @@ parser.prototype.feed_line = function(line)
     }
 
     // [SectionName]
-    if (line.startsWith("[")) {
+    if (line.startsWith("["))
+    {
+        // on old maps there's no ar and ar = od
+        if (this.section == "Difficulty" && this.map.ar == null) {
+            this.map.ar = this.map.od;
+        }
+
         this.section = line.substring(1, line.length - 1);
         return this;
     }
