@@ -215,7 +215,7 @@ if (typeof exports !== "undefined") {
 
 osu.VERSION_MAJOR = 1;
 osu.VERSION_MINOR = 0;
-osu.VERSION_PATCH = 6;
+osu.VERSION_PATCH = 7;
 
 // internal utilities
 // ----------------------------------------------------------------
@@ -501,12 +501,6 @@ beatmap.prototype.toString = function()
 // beatmap parser
 // ----------------------------------------------------------------
 
-// this is supposed to be the format's magic string, however .osu
-// files with random spaces or a BOM before this have been found
-// in the wild so in practice we still have to trim the first line
-
-var OSU_MAGIC = "osu file format v";
-
 // partial .osu file parser built around pp calculation
 
 function parser()
@@ -546,27 +540,6 @@ parser.prototype.feed_line = function(line)
     this.curline = this.lastpos = line;
     ++this.nline;
 
-    // first line must be the magic format version string
-    if (this.nline == 1)
-    {
-        this.map.reset();
-
-        if (!line) {
-            throw new SyntaxError("empty file");
-        }
-
-        var magicpos = line.indexOf(OSU_MAGIC);
-        if (magicpos < 0) {
-            throw new SyntaxError("not a valid .osu file");
-        }
-
-        this.map.format_version = parseInt(
-            line.substring(magicpos + OSU_MAGIC.length)
-        );
-
-        return this;
-    }
-
     // comments
     if (line.startsWith(" ") || line.startsWith("_")) {
         return this;
@@ -600,6 +573,16 @@ parser.prototype.feed_line = function(line)
     case "Difficulty": this._difficulty(); break;
     case "TimingPoints": this._timing_points(); break;
     case "HitObjects": this._objects(); break;
+    default:
+        var fmtpos = line.indexOf("file format v");
+        if (fmtpos< 0) {
+            break;
+        }
+
+        this.map.format_version = parseInt(
+            line.substring(fmtpos + 13)
+        );
+        break;
     }
 
     return this;
