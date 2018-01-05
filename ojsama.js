@@ -215,7 +215,7 @@ if (typeof exports !== "undefined") {
 
 osu.VERSION_MAJOR = 1;
 osu.VERSION_MINOR = 0;
-osu.VERSION_PATCH = 7;
+osu.VERSION_PATCH = 8;
 
 // internal utilities
 // ----------------------------------------------------------------
@@ -836,6 +836,10 @@ modbits.string = function(mods)
         if (mods & modbits[property]) {
             res += property.toUpperCase();
         }
+    }
+
+    if (res.indexOf("DT") >= 0 && res.indexOf("NC") >= 0) {
+        res = res.replace("DT", "");
     }
 
     return res;
