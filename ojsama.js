@@ -215,7 +215,7 @@ if (typeof exports !== "undefined") {
 
 osu.VERSION_MAJOR = 1;
 osu.VERSION_MINOR = 0;
-osu.VERSION_PATCH = 5;
+osu.VERSION_PATCH = 6;
 
 // internal utilities
 // ----------------------------------------------------------------
@@ -807,19 +807,28 @@ modbits.from_string = function(str)
     var mask = 0;
     str = str.toLowerCase();
 
-    for (var property in modbits)
+    while (str != "")
     {
-        if (property.length != 2) {
-            continue;
+        var nchars = 1;
+
+        for (var property in modbits)
+        {
+            if (property.length != 2) {
+                continue;
+            }
+
+            if (!modbits.hasOwnProperty(property)) {
+                continue;
+            }
+
+            if (str.startsWith(property)) {
+                mask |= modbits[property];
+                nchars = 2;
+                break;
+            }
         }
 
-        if (!modbits.hasOwnProperty(property)) {
-            continue;
-        }
-
-        if (str.indexOf(property) >= 0) {
-            mask |= modbits[property];
-        }
+        str = str.slice(nchars);
     }
 
     return mask;
