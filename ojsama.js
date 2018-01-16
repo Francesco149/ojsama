@@ -215,7 +215,7 @@ if (typeof exports !== "undefined") {
 
 osu.VERSION_MAJOR = 1;
 osu.VERSION_MINOR = 0;
-osu.VERSION_PATCH = 10;
+osu.VERSION_PATCH = 11;
 
 // internal utilities
 // ----------------------------------------------------------------
@@ -711,6 +711,9 @@ parser.prototype._timing_points = function()
 
     if (s.length > 8) {
         this._warn("timing point with trailing values");
+    } else if (s.length < 2) {
+        this._warn("ignoring malformed timing point");
+        return;
     }
 
     var t = new timing({
@@ -728,9 +731,13 @@ parser.prototype._timing_points = function()
 parser.prototype._objects = function()
 {
     var s = this.curline.split(",");
+    var d;
 
     if (s.length > 11) {
         this._warn("object with trailing values");
+    } else if (s.length < 4) {
+        this._warn("ignoring malformed hitobject");
+        return;
     }
 
     var obj = new hitobject({
@@ -738,15 +745,25 @@ parser.prototype._objects = function()
         type: parseInt(this._setpos(s[3])),
     });
 
+    if (isNaN(obj.time) || isNaN(obj.type)) {
+        this._warn("ignoring malformed hitobject");
+        return;
+    }
+
     if ((obj.type & objtypes.circle) != 0)
     {
         ++this.map.ncircles;
-        obj.data = new circle({
+        d = obj.data = new circle({
             pos: [
                 parseFloat(this._setpos(s[0])),
                 parseFloat(this._setpos(s[1])),
             ]
         });
+
+        if (isNaN(d.pos[0]) || isNaN(d.pos[1])) {
+            this._warn("ignoring malformed circle");
+            return;
+        }
     }
 
     else if ((obj.type & osu.objtypes.spinner) != 0) {
@@ -755,8 +772,13 @@ parser.prototype._objects = function()
 
     else if ((obj.type & osu.objtypes.slider) != 0)
     {
+        if (s.length < 8) {
+            this._warn("ignoring malformed slider");
+            return;
+        }
+
         ++this.map.nsliders;
-        obj.data = new slider({
+        d = obj.data = new slider({
             pos: [
                 parseFloat(this._setpos(s[0])),
                 parseFloat(this._setpos(s[1])),
@@ -764,6 +786,13 @@ parser.prototype._objects = function()
             repetitions: parseInt(this._setpos(s[6])),
             distance: parseFloat(this._setpos(s[7])),
         });
+
+        if (isNaN(d.pos[0]) || isNaN(d.pos[1]) ||
+            isNaN(d.repetitions) || isNaN(d.distance))
+        {
+            this._warn("ignoring malformed slider");
+            return;
+        }
     }
 
     this.map.objects.push(obj);
