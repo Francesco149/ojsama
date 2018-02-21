@@ -215,7 +215,7 @@ if (typeof exports !== "undefined") {
 
 osu.VERSION_MAJOR = 1;
 osu.VERSION_MINOR = 0;
-osu.VERSION_PATCH = 14;
+osu.VERSION_PATCH = 15;
 
 // internal utilities
 // ----------------------------------------------------------------
@@ -238,7 +238,7 @@ var array_toFixed = function(arr, n)
 };
 
 function isUndefined(val) {
-    return typeof val === undefined;
+    return typeof val === "undefined";
 }
 
 // timing point
