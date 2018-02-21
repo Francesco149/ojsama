@@ -215,7 +215,7 @@ if (typeof exports !== "undefined") {
 
 osu.VERSION_MAJOR = 1;
 osu.VERSION_MINOR = 0;
-osu.VERSION_PATCH = 12;
+osu.VERSION_PATCH = 13;
 
 // internal utilities
 // ----------------------------------------------------------------
@@ -1651,9 +1651,9 @@ std_ppv2.prototype.calc = function(params)
         nsliders = params.nsliders;
         ncircles = params.ncircles;
         nobjects = params.nobjects;
-        if ([nsliders, ncircles, nobjects].some(isUndefined)) {
+        if ([nsliders, ncircles, nobjects].some(isNaN)) {
             throw new TypeError(
-                "nsliders, ncircles, nobjects are required"
+                "nsliders, ncircles, nobjects are required (must be numbers) "
             );
         }
         if (nobjects < nsliders + ncircles) {
@@ -1682,8 +1682,8 @@ std_ppv2.prototype.calc = function(params)
         speed_stars = params.speed_stars;
     }
 
-    if ([aim_stars, speed_stars].some(isUndefined)) {
-        throw new TypeError("aim and speed stars required");
+    if ([aim_stars, speed_stars].some(isNaN)) {
+        throw new TypeError("aim and speed stars required (must be numbers)");
     }
 
     var nmiss = params.nmiss || 0;
