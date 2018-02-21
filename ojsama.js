@@ -237,6 +237,10 @@ var array_toFixed = function(arr, n)
     return res;
 };
 
+function isUndefined(val) {
+    return typeof val === undefined;
+}
+
 // timing point
 // ----------------------------------------------------------------
 // defines parameters such as timing and sampleset for an interval.
@@ -1647,7 +1651,7 @@ std_ppv2.prototype.calc = function(params)
         nsliders = params.nsliders;
         ncircles = params.ncircles;
         nobjects = params.nobjects;
-        if (!nsliders || !ncircles || !nobjects) {
+        if ([nsliders, ncircles, nobjects].some(isUndefined)) {
             throw new TypeError(
                 "nsliders, ncircles, nobjects are required"
             );
@@ -1659,9 +1663,9 @@ std_ppv2.prototype.calc = function(params)
         }
 
         base_ar = params.base_ar;
-        if (base_ar === undefined) base_ar = 5;
+        if (isUndefined(base_ar)) base_ar = 5;
         base_od = params.base_od;
-        if (base_od === undefined) base_od = 5;
+        if (isUndefined(base_od)) base_od = 5;
     }
 
     if (stars)
@@ -1678,7 +1682,7 @@ std_ppv2.prototype.calc = function(params)
         speed_stars = params.speed_stars;
     }
 
-    if (aim_stars === undefined || speed_stars === undefined) {
+    if ([aim_stars, speed_stars].some(isUndefined)) {
         throw new TypeError("aim and speed stars required");
     }
 
