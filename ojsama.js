@@ -215,7 +215,7 @@ if (typeof exports !== "undefined") {
 
 osu.VERSION_MAJOR = 1;
 osu.VERSION_MINOR = 0;
-osu.VERSION_PATCH = 13;
+osu.VERSION_PATCH = 14;
 
 // internal utilities
 // ----------------------------------------------------------------
@@ -329,7 +329,7 @@ function hitobject(values)
 {
     this.time = values.time || 0.0;
     this.type = values.type || 0;
-    this.data = values.data || null;
+    if (!isUndefined(values.data)) this.data = values.data;
 }
 
 hitobject.prototype.typestr = function()
@@ -376,7 +376,7 @@ beatmap.prototype.reset = function()
     this.creator = "";
     this.version = "";
 
-    this.ar = null;
+    this.ar = undefined;
     this.cs = this.od = this.hp = 5.0;
     this.sv = this.tick_rate = 1.0;
 
@@ -565,7 +565,7 @@ parser.prototype.feed_line = function(line)
     if (line.startsWith("["))
     {
         // on old maps there's no ar and ar = od
-        if (this.section == "Difficulty" && this.map.ar === null) {
+        if (this.section == "Difficulty" && isUndefined(this.map.ar)) {
             this.map.ar = this.map.od;
         }
 
@@ -1076,7 +1076,7 @@ function std_diff()
     // make some parameters persist so they can be
     // re-used in subsequent calls if no new value is specified
 
-    this.map = null;
+    this.map = undefined;
     this.mods = modbits.nomod;
     this.singletap_threshold = 125.0;
 }
@@ -1422,7 +1422,7 @@ function diff()
     // this instance
 
     this.calculators = [];
-    this.map = null;
+    this.map = undefined;
 }
 
 // figures out what difficulty calculator to use based on the
@@ -1438,7 +1438,7 @@ function diff()
 
 diff.prototype.calc = function(params)
 {
-    var calculator = null;
+    var calculator;
     var map = this.map = params.map || this.map;
     if (!map) {
         throw new TypeError("no map given");
@@ -1587,7 +1587,7 @@ function std_ppv2()
 
     // accuracy used in the last calc() call
 
-    this.computed_accuracy = null;
+    this.computed_accuracy = undefined;
 }
 
 // metaparams:
