@@ -1757,7 +1757,7 @@ std_ppv2.prototype.calc = function(params)
     aim *= combo_break;
     aim *= ar_bonus;
 
-    if (mods & modbits.hd) aim *= 1.18;
+    if (mods & modbits.hd) aim *= 1.03;
     if (mods & modbits.fl) aim *= 1.45 * length_bonus;
 
     var acc_bonus = 0.5 + accuracy / 2.0;
@@ -1777,6 +1777,8 @@ std_ppv2.prototype.calc = function(params)
     speed *= combo_break;
     speed *= acc_bonus;
     speed *= od_bonus;
+
+    if (mods & modbits.hd) speed *= 1.18;
 
     this.speed = speed;
 
