@@ -215,7 +215,7 @@ if (typeof exports !== "undefined") {
 
 osu.VERSION_MAJOR = 1;
 osu.VERSION_MINOR = 0;
-osu.VERSION_PATCH = 15;
+osu.VERSION_PATCH = 16;
 
 // internal utilities
 // ----------------------------------------------------------------
@@ -1757,7 +1757,8 @@ std_ppv2.prototype.calc = function(params)
     aim *= combo_break;
     aim *= ar_bonus;
 
-    if (mods & modbits.hd) aim *= 1.03;
+    // 1.04 bonus for AR10, 1.06 for AR9, 1.02 for AR11
+    if (mods & modbits.hd) aim *= 1.02 + (11.0 - mapstats.ar) / 50.0;
     if (mods & modbits.fl) aim *= 1.45 * length_bonus;
 
     var acc_bonus = 0.5 + accuracy / 2.0;
