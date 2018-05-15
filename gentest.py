@@ -26,7 +26,7 @@ except ImportError:
 
 parser = argparse.ArgumentParser(
     description = (
-        "generates the oppai test suite. outputs c++ code to " +
+        "generates the oppai test suite. outputs js code to " +
         "stdout and the json dump to a file."
     )
 )
@@ -132,7 +132,7 @@ def osu_get(conn, endpoint, paramsdict=None):
 
 
 def gen_modstr(bitmask):
-    ''' generates c++ code for a mod combination's bitmask '''
+    ''' generates js code for a mod combination's bitmask '''
     mods = []
 
     allmods = {
