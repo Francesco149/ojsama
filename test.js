@@ -89,19 +89,15 @@ function do_file(i)
             margin *= 1.5;
         }
 
-        if (Math.abs(pp.total - suite[i].pp) >= margin)
-        {
-            console.error(
-                "failed test: got " + pp.total + "pp, "
-                + "expected " + suite[i].pp + "\n"
-            );
+        str += " " + suite[i].max_combo + "x"
+            + " " + pp.computed_accuracy
+            + " " + pp.total + "pp";
 
+        if (Math.abs(pp.total - suite[i].pp) >= margin) {
+            console.error("!!!FAILED!!! "
+                + str + " expected " + suite[i].pp);
             process.exit(1);
         }
-
-        str += " " + suite[i].max_combo.toString() + "x"
-            + " " + pp.computed_accuracy.toString()
-            + " " + pp.total.toString() + "pp";
 
         console.log(str);
 
