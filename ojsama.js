@@ -215,7 +215,7 @@ if (typeof exports !== "undefined") {
 
 osu.VERSION_MAJOR = 1;
 osu.VERSION_MINOR = 0;
-osu.VERSION_PATCH = 16;
+osu.VERSION_PATCH = 17;
 
 // internal utilities
 // ----------------------------------------------------------------
@@ -1491,7 +1491,45 @@ function std_accuracy(values)
     this.n100 = values.n100 || 0;
     this.n50 = values.n50 || 0;
 
-    if (values.percent)
+    if (values.nobjects)
+    {
+        var n300 = this.n300;
+        var nobjects = values.nobjects;
+        var hitcount;
+
+        if (n300 < 0) {
+            n300 = Math.max(0,
+                nobjects - this.n100 - this.n50 - this.nmiss);
+        }
+
+        hitcount = n300 + this.n100 + this.n50 + this.nmiss;
+
+        if (hitcount > nobjects) {
+            n300 -= Math.min(n300, hitcount - nobjects);
+        }
+
+        hitcount = n300 + this.n100 + this.n50 + this.nmiss;
+
+        if (hitcount > nobjects) {
+            this.n100 -= Math.min(this.n100, hitcount - nobjects);
+        }
+
+        hitcount = n300 + this.n100 + this.n50 + this.nmiss;
+
+        if (hitcount > nobjects) {
+            this.n50 -= Math.min(this.n50, hitcount - nobjects);
+        }
+
+        hitcount = n300 + this.n100 + this.n50 + this.nmiss;
+
+        if (hitcount > nobjects) {
+            this.nmiss -= Math.min(this.nmiss, hitcount - nobjects);
+        }
+
+        this.n300 = nobjects - this.n100 - this.n50 - this.nmiss;
+    }
+
+    if (values.percent !== undefined)
     {
         var nobjects = values.nobjects;
         if (nobjects === undefined) {
@@ -1500,7 +1538,6 @@ function std_accuracy(values)
             );
         }
 
-        this.nmiss = Math.min(nobjects, this.nmiss);
         var max300 = nobjects - this.nmiss;
 
         var maxacc = new std_accuracy({
