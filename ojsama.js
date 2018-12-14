@@ -214,8 +214,8 @@ if (typeof exports !== "undefined") {
 (function() {
 
 osu.VERSION_MAJOR = 1;
-osu.VERSION_MINOR = 0;
-osu.VERSION_PATCH = 19;
+osu.VERSION_MINOR = 1;
+osu.VERSION_PATCH = 0;
 
 // internal utilities
 // ----------------------------------------------------------------
@@ -1796,7 +1796,17 @@ std_ppv2.prototype.calc = function(params)
 
     // 1.04 bonus for AR10, 1.06 for AR9, 1.02 for AR11
     if (mods & modbits.hd) aim *= 1.02 + (11.0 - mapstats.ar) / 50.0;
-    if (mods & modbits.fl) aim *= 1.45 * length_bonus;
+    if (mods & modbits.fl)
+    {
+        var fl_bonus = 1.0 + 0.35 * Math.min(1.0, nobjects / 200.0);
+        if (nobjects > 200) {
+            fl_bonus += 0.3 * Math.min(1.0, (nobjects - 200) / 300.0);
+        }
+        if (nobjects > 500) {
+            fl_bonus += (nobjects - 500) / 1200.0;
+        }
+        aim *= fl_bonus;
+    }
 
     var acc_bonus = 0.5 + accuracy / 2.0;
     var od_bonus =
