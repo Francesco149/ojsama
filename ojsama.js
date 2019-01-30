@@ -1022,7 +1022,10 @@ std_diff_hitobject.prototype.reset = function()
 {
     this.strains = [ 0.0, 0.0 ];
     this.normpos = [ 0.0, 0.0 ];
+    this.angle = 0.0;
     this.is_single = false;
+    this.delta_time = 0.0;
+    this.d_distance = 0.0;
     return this;
 };
 
@@ -1043,13 +1046,15 @@ function vec_len(v) {
     return Math.sqrt(v[0] * v[0] + v[1] * v[1]);
 }
 
+function vec_dot(a, b) {
+    return a[0] * b[0] + a[1] * b[1];
+}
+
 // _(internal)_
 // difficulty calculation constants
 
 var DIFF_SPEED = 0;
 var DIFF_AIM = 1;
-var ALMOST_DIAMETER = 90.0;
-var STREAM_SPACING = 110.0;
 var SINGLE_SPACING = 125.0;
 var DECAY_BASE = [ 0.3, 0.15 ];
 var WEIGHT_SCALING = [ 1400.0, 26.25 ];
@@ -1087,7 +1092,11 @@ std_diff.prototype.reset = function()
 
     this.total = 0.0;
     this.aim = 0.0;
+    this.aim_difficulty = 0.0;
+    this.aim_length_bonus = 0.0;
     this.speed = 0.0;
+    this.speed_difficulty = 0.0;
+    this.speed_length_bonus = 0.0;
 
     // number of notes that are seen as singletaps by the
     // difficulty calculator
@@ -1100,6 +1109,10 @@ std_diff.prototype.reset = function()
     // calculation which could be useful
 
     this.nsingles_threshold = 0;
+};
+
+std_diff.prototype._length_bonus = function(stars, difficulty) {
+    return 0.32 + 0.5 * (Math.log10(difficulty + stars) - Math.log10(stars));
 };
 
 // calculate difficulty and return current instance, which
@@ -1135,16 +1148,23 @@ std_diff.prototype.calc = function(params)
     var speed_mul = stats.speed_mul;
     this._init_objects(this.objects, map, stats.cs);
 
-    this.speed = this._calc_individual(
+    var speed = this._calc_individual(
         DIFF_SPEED, this.objects, speed_mul
     );
+    this.speed = speed.difficulty;
+    this.speed_difficulty = speed.total;
 
-    this.aim = this._calc_individual(
+    var aim = this._calc_individual(
         DIFF_AIM, this.objects, speed_mul
     );
+    this.aim = aim.difficulty;
+    this.aim_difficulty = aim.total;
 
-    this.speed = Math.sqrt(this.speed) * STAR_SCALING_FACTOR;
+    this.aim_length_bonus = this._length_bonus(this.aim, this.aim_difficulty);
+    this.speed_length_bonus = this._length_bonus(this.speed, this.speed_difficulty);
     this.aim = Math.sqrt(this.aim) * STAR_SCALING_FACTOR;
+    this.speed = Math.sqrt(this.speed) * STAR_SCALING_FACTOR;
+
     if (mods & modbits.td) {
         this.aim = Math.pow(this.aim, 0.8);
     }
@@ -1193,38 +1213,73 @@ std_diff.prototype.toString = function()
 // _(internal)_
 // calculate spacing weight for a difficulty type
 
-std_diff.prototype._spacing_weight = function(type, distance)
+// ~200BPM 1/4 streams
+var MIN_SPEED_BONUS = 75.0;
+
+// ~330BPM 1/4 streams
+var MAX_SPEED_BONUS = 45.0;
+
+var ANGLE_BONUS_SCALE = 90;
+var AIM_TIMING_THRESHOLD = 107;
+var SPEED_ANGLE_BONUS_BEGIN = 5 * Math.PI / 6;
+var AIM_ANGLE_BONUS_BEGIN = Math.PI / 3;
+
+std_diff.prototype._spacing_weight = function(type, distance, delta_time,
+    prev_distance, prev_delta_time, angle)
 {
+    var angle_bonus;
+    var speed_bonus;
+    var strain_time = Math.max(delta_time, 50.0);
+    var prev_strain_time = Math.max(prev_delta_time, 50.0);
+    var result;
+    var weighted_distance;
     switch (type)
     {
     case DIFF_AIM:
-        return Math.pow(distance, 0.99);
+        result = 0.0;
+        if (angle !== null && angle > AIM_ANGLE_BONUS_BEGIN) {
+            angle_bonus = Math.sqrt(
+                Math.max(prev_distance - ANGLE_BONUS_SCALE, 0.0) *
+                Math.pow(Math.sin(angle - AIM_ANGLE_BONUS_BEGIN), 2.0) *
+                Math.max(distance - ANGLE_BONUS_SCALE, 0.0)
+            );
+            result = 1.5 * Math.pow(Math.max(0.0, angle_bonus), 0.99) /
+                Math.max(AIM_TIMING_THRESHOLD, prev_strain_time);
+        }
+        weighted_distance = Math.pow(distance, 0.99);
+        return Math.max(
+            result + weighted_distance / Math.max(AIM_TIMING_THRESHOLD, strain_time),
+            weighted_distance / strain_time
+        );
 
     case DIFF_SPEED:
-        if (distance > SINGLE_SPACING) {
-            return 2.5;
+        distance = Math.min(distance, SINGLE_SPACING);
+        delta_time = Math.max(delta_time, MAX_SPEED_BONUS);
+        speed_bonus = 1.0;
+        if (delta_time < MIN_SPEED_BONUS) {
+            speed_bonus += Math.pow((MIN_SPEED_BONUS - delta_time) / 40.0, 2);
         }
-
-        else if (distance > STREAM_SPACING)
-        {
-            return 1.6 + 0.9 * (distance - STREAM_SPACING)
-                / (SINGLE_SPACING - STREAM_SPACING);
+        angle_bonus = 1.0;
+        if (angle !== null) {
+            var s = Math.sin(1.5 * (SPEED_ANGLE_BONUS_BEGIN - angle));
+            angle_bonus += Math.pow(s, 2) / 3.57;
+            if (angle < Math.PI / 2.0) {
+                angle_bonus = 1.28;
+                if (distance < ANGLE_BONUS_SCALE && angle < Math.PI / 4.0) {
+                    angle_bonus += (1.0 - angle_bonus) *
+                        Math.min((ANGLE_BONUS_SCALE - distance) / 10.0, 1.0);
+                }
+                else if (distance < ANGLE_BONUS_SCALE) {
+                    angle_bonus += (1.0 - angle_bonus) *
+                        Math.min((ANGLE_BONUS_SCALE - distance) / 10.0, 1.0) *
+                        Math.sin((Math.PI / 2.0 - angle) * 4.0 / Math.PI);
+                }
+            }
         }
-
-        else if (distance > ALMOST_DIAMETER)
-        {
-            return 1.2 + 0.4 * (distance - ALMOST_DIAMETER)
-                / (STREAM_SPACING - ALMOST_DIAMETER);
-        }
-
-        else if (distance > ALMOST_DIAMETER / 2.0)
-        {
-            return 0.95 + 0.25
-                * (distance - ALMOST_DIAMETER / 2.0)
-                / (ALMOST_DIAMETER / 2.0);
-        }
-
-        return 0.95;
+        return (
+            (1 + (speed_bonus - 1) * 0.75) * angle_bonus *
+            (0.95 + speed_bonus * Math.pow(distance / SINGLE_SPACING, 3.5))
+        ) / strain_time;
     }
 
     throw {
@@ -1247,21 +1302,23 @@ std_diff.prototype._calc_strain = function(type, diffobj,
     var decay = Math.pow(DECAY_BASE[type],
         time_elapsed / 1000.0);
 
+    diffobj.delta_time = time_elapsed;
+
     if ((obj.type & (objtypes.slider|objtypes.circle)) != 0)
     {
         var distance = vec_len(
             vec_sub(diffobj.normpos, prev_diffobj.normpos)
         );
+        diffobj.d_distance = distance;
 
         if (type == DIFF_SPEED) {
             diffobj.is_single = distance > SINGLE_SPACING;
         }
 
-        value = this._spacing_weight(type, distance);
+        value = this._spacing_weight(type, distance, time_elapsed,
+            prev_diffobj.d_distance, prev_diffobj.delta_time, diffobj.angle);
         value *= WEIGHT_SCALING[type];
     }
-
-    value /= Math.max(time_elapsed, 50.0);
 
     diffobj.strains[type]
         = prev_diffobj.strains[type] * decay + value;
@@ -1323,17 +1380,19 @@ std_diff.prototype._calc_individual = function(type, diffobjs,
     }
 
     var weight = 1.0;
+    var total = 0.0;
     var difficulty = 0.0;
 
     strains.sort(function (a, b) { return b - a; });
 
     for (i = 0; i < strains.length; ++i)
     {
+        total += Math.pow(strains[i], 1.2);
         difficulty += strains[i] * weight;
         weight *= DECAY_WEIGHT;
     }
 
-    return difficulty;
+    return {difficulty: difficulty, total: total};
 };
 
 // _(internal)_
@@ -1355,7 +1414,7 @@ std_diff.prototype._normalizer_vector = function(circlesize)
     {
         scaling_factor *= 1.0
             + Math.min(CIRCLESIZE_BUFF_THRESHOLD - radius, 5.0)
-            / 50.0;
+            / 30.0;
     }
 
     return [scaling_factor, scaling_factor];
@@ -1410,6 +1469,17 @@ std_diff.prototype._init_objects = function(diffobjs, map,
         }
 
         diffobjs[i].normpos = vec_mul(pos, scaling_vec);
+        if (i >= 2) {
+            var prev1 = diffobjs[i - 1];
+            var prev2 = diffobjs[i - 2];
+            var v1 = vec_sub(prev2.normpos, prev1.normpos);
+            var v2 = vec_sub(diffobjs[i].normpos, prev1.normpos);
+            var dot = vec_dot(v1, v2);
+            var det = v1[0] * v2[1] - v1[1] * v2[0];
+            diffobjs[i].angle = Math.abs(Math.atan2(det, dot));
+        } else {
+            diffobjs[i].angle = null;
+        }
     }
 };
 
