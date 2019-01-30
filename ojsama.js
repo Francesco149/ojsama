@@ -1775,15 +1775,8 @@ std_ppv2.prototype.calc = function(params)
         ar_bonus += 0.3 * (mapstats.ar - 10.33);
     }
 
-    else if (mapstats.ar < 8.0)
-    {
-        var low_ar_bonus = 0.01 * (8.0 - mapstats.ar);
-
-        if (mods & modbits.hd) {
-            low_ar_bonus *= 2.0;
-        }
-
-        ar_bonus += low_ar_bonus;
+    else if (mapstats.ar < 8.0) {
+        ar_bonus += 0.01 * (8.0 - mapstats.ar);
     }
 
     // aim pp
@@ -1794,8 +1787,13 @@ std_ppv2.prototype.calc = function(params)
     aim *= combo_break;
     aim *= ar_bonus;
 
-    // 1.04 bonus for AR10, 1.06 for AR9, 1.02 for AR11
-    if (mods & modbits.hd) aim *= 1.02 + (11.0 - mapstats.ar) / 50.0;
+    var hd_bonus = 1.0;
+    if (mods & modbits.hd) {
+        hd_bonus *= 1.0 + 0.04 * (12.0 - mapstats.ar);
+    }
+
+    aim *= hd_bonus;
+
     if (mods & modbits.fl)
     {
         var fl_bonus = 1.0 + 0.35 * Math.min(1.0, nobjects / 200.0);
@@ -1824,6 +1822,7 @@ std_ppv2.prototype.calc = function(params)
     speed *= miss_penality;
     speed *= combo_break;
     speed *= ar_bonus;
+    speed *= hd_bonus;
 
     // scale speed with acc and od
     var acc_od_bonus = 1.0 / (
@@ -1832,8 +1831,6 @@ std_ppv2.prototype.calc = function(params)
     acc_od_bonus += od_squared / 5000.0 + 0.49;
 
     speed *= acc_od_bonus;
-
-    if (mods & modbits.hd) speed *= 1.18;
 
     this.speed = speed;
 
