@@ -1809,8 +1809,8 @@ std_ppv2.prototype.calc = function(params)
     }
 
     var acc_bonus = 0.5 + accuracy / 2.0;
-    var od_bonus =
-        0.98 + (mapstats.od * mapstats.od) / 2500.0;
+    var od_squared = Math.pow(mapstats.od, 2);
+    var od_bonus = 0.98 + od_squared / 2500.0;
 
     aim *= acc_bonus;
     aim *= od_bonus;
@@ -1823,9 +1823,15 @@ std_ppv2.prototype.calc = function(params)
     speed *= length_bonus;
     speed *= miss_penality;
     speed *= combo_break;
-    speed *= acc_bonus;
-    speed *= od_bonus;
     speed *= ar_bonus;
+
+    // scale speed with acc and od
+    var acc_od_bonus = 1.0 / (
+      1.0 + Math.exp(-20.0 * (accuracy + od_squared / 2310.0 - 0.8733))
+    ) / 1.89;
+    acc_od_bonus += od_squared / 5000.0 + 0.49;
+
+    speed *= acc_od_bonus;
 
     if (mods & modbits.hd) speed *= 1.18;
 
