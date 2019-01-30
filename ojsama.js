@@ -1772,7 +1772,7 @@ std_ppv2.prototype.calc = function(params)
     var ar_bonus = 1.0;
 
     if (mapstats.ar > 10.33) {
-        ar_bonus += 0.45 * (mapstats.ar - 10.33);
+        ar_bonus += 0.3 * (mapstats.ar - 10.33);
     }
 
     else if (mapstats.ar < 8.0)
@@ -1825,6 +1825,7 @@ std_ppv2.prototype.calc = function(params)
     speed *= combo_break;
     speed *= acc_bonus;
     speed *= od_bonus;
+    speed *= ar_bonus;
 
     if (mods & modbits.hd) speed *= 1.18;
 
