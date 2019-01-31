@@ -4,7 +4,3 @@ docco -l plain-markdown ojsama.js
 mv docs/ojsama.html ./README.md
 sed '/code documentation/,$d' -i README.md
 docco -l parallel ojsama.js
-
-# custom script i use to upload docs to my site
-which hnng 2>&1 >/dev/null && \
-    hnng docs/ojsama.html stuff/ojsama.html
