@@ -1261,7 +1261,7 @@ std_diff.prototype._normalizer_vector = function(circlesize) {
 
   if (radius < CIRCLESIZE_BUFF_THRESHOLD) {
     scaling_factor *= 1.0
-      + Math.min(CIRCLESIZE_BUFF_THRESHOLD - radius, 5.0) / 30.0;
+      + Math.min(CIRCLESIZE_BUFF_THRESHOLD - radius, 5.0) / 50.0;
   }
   return [scaling_factor, scaling_factor];
 }
