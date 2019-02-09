@@ -1135,7 +1135,7 @@ std_diff.prototype._spacing_weight = function(type, distance, delta_time,
         speed_bonus += Math.pow((MIN_SPEED_BONUS - delta_time) / 40.0, 2);
       }
       angle_bonus = 1.0;
-      if (angle !== null) {
+      if (angle !== null && angle < SPEED_ANGLE_BONUS_BEGIN) {
         var s = Math.sin(1.5 * (SPEED_ANGLE_BONUS_BEGIN - angle));
         angle_bonus += Math.pow(s, 2) / 3.57;
         if (angle < Math.PI / 2.0) {
@@ -1288,21 +1288,13 @@ std_diff.prototype._init_objects = function(diffobjs, map,
       diffobjs[i].reset();
     }
 
+    var pos;
     var obj = diffobjs[i].obj;
     if (obj.type & objtypes.spinner) {
       diffobjs[i].normpos = normalized_center.slice();
-      continue;
+    } else if (obj.type & (objtypes.slider|objtypes.circle)) {
+      diffobjs[i].normpos = vec_mul(obj.data.pos, scaling_vec);
     }
-
-    var pos;
-    if (obj.type & (objtypes.slider|objtypes.circle)) {
-      pos = obj.data.pos;
-    } else {
-      log.warn("unknown object type ", obj.type.toString(16));
-      pos = [0.0, 0.0];
-    }
-
-    diffobjs[i].normpos = vec_mul(pos, scaling_vec);
     if (i >= 2) {
       var prev1 = diffobjs[i - 1];
       var prev2 = diffobjs[i - 2];
