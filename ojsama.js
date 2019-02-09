@@ -1724,7 +1724,7 @@ std_ppv2.prototype.calc = function(params) {
   );
 
   acc *= Math.min(1.15, Math.pow(ncircles / 1000.0, 0.3));
-  if (mods & modbits.hd) acc *= 1.02;
+  if (mods & modbits.hd) acc *= 1.08;
   if (mods & modbits.fl) acc *= 1.02;
 
   this.acc = acc;
