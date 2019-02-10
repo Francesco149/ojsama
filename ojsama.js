@@ -1669,7 +1669,9 @@ std_ppv2.prototype.calc = function(params) {
   speed *= length_bonus;
   speed *= miss_penality;
   speed *= combo_break;
-  speed *= ar_bonus;
+  if (mapstats.ar > 10.33) {
+    speed *= ar_bonus;
+  }
   speed *= hd_bonus;
 
   // scale speed with acc and od
