@@ -214,7 +214,7 @@ if (typeof exports !== "undefined") {
 (function() {
 
 osu.VERSION_MAJOR = 1;
-osu.VERSION_MINOR = 1;
+osu.VERSION_MINOR = 2;
 osu.VERSION_PATCH = 0;
 
 // internal utilities
@@ -802,8 +802,8 @@ modbits.map_changing = modbits.hr | modbits.ez | modbits.speed_changing;
 // _(internal)_
 // osu!standard stats constants
 
-var OD0_MS = 79.5;
-var OD10_MS = 19.5;
+var OD0_MS = 80;
+var OD10_MS = 20;
 var AR0_MS = 1800.0;
 var AR5_MS = 1200.0;
 var AR10_MS = 450.0;
