@@ -1674,13 +1674,10 @@ std_ppv2.prototype.calc = function(params) {
   }
   speed *= hd_bonus;
 
-  // scale speed with acc and od
-  var acc_od_bonus = 1.0 / (
-    1.0 + Math.exp(-20.0 * (accuracy + od_squared / 2310.0 - 0.8733))
-  ) / 1.89;
-  acc_od_bonus += od_squared / 5000.0 + 0.49;
+  // similar to aim acc and od bonus
 
-  speed *= acc_od_bonus;
+  speed *= 0.02 + accuracy;
+  speed *= 0.96 + od_squared / 1600.0;
 
   this.speed = speed;
 
