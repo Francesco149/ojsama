@@ -3,11 +3,11 @@ var readline = require("readline");
 var osu = require("./ojsama");
 var suite = require("./test_suite").suite;
 
-// pp can be off by +- 6%
+// pp can be off by +- 2%
 // margin is actually 3x for < 100pp, 2x for 100-200,
 // 1.5x for 200-300
 
-var ERROR_MARGIN = 0.06;
+var ERROR_MARGIN = 0.02;
 
 var parser = new osu.parser();
 var stars, pp;
