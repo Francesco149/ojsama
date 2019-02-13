@@ -215,7 +215,7 @@ if (typeof exports !== "undefined") {
 
 osu.VERSION_MAJOR = 1;
 osu.VERSION_MINOR = 2;
-osu.VERSION_PATCH = 0;
+osu.VERSION_PATCH = 1;
 
 // internal utilities
 // ----------------------------------------------------------------
@@ -1204,11 +1204,19 @@ std_diff.prototype._calc_strain = function(type, diffobj, prev_diffobj,
 // for subsequent chunks, the initial max strain is calculated
 // by decaying the previous hitobject's strain until the
 // beginning of the new chunk
+//
+// the first object doesn't generate a strain
+// so we begin with an incremented interval end
+//
+// also don't forget to manually add the peak strain for the last
+// section which would otherwise be ignored
 
 std_diff.prototype._calc_individual = function(type, diffobjs, speed_mul) {
   var strains = [];
   var strain_step = STRAIN_STEP * speed_mul;
-  var interval_end = strain_step;
+  var interval_end = (
+    Math.ceil(diffobjs[0].obj.time / strain_step) * strain_step
+  );
   var max_strain = 0.0;
   var i;
 
@@ -1230,6 +1238,8 @@ std_diff.prototype._calc_individual = function(type, diffobjs, speed_mul) {
     }
     max_strain = Math.max(max_strain, diffobjs[i].strains[type]);
   }
+
+  strains.push(max_strain);
 
   var weight = 1.0;
   var total = 0.0;
