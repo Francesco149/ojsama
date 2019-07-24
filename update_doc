@@ -1,6 +1,0 @@
-#!/bin/sh
-
-docco -l plain-markdown ojsama.js
-mv docs/ojsama.html ./README.md
-sed '/code documentation/,$d' -i README.md
-docco -l parallel ojsama.js
