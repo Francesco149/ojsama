@@ -1,15 +1,17 @@
 const {objtypes} = require('./hitobjects');
+
 const modes = {
   std: 0,
 };
 
-// partial beatmap structure with just enough data for pp
-// calculation
+/**
+ * Partial beatmap structure with just enough data for pp calculation.
+ */
 class beatmap {
+  /**
+   * Constructor for a beatmap.
+   */
   constructor() {
-    this.reset();
-  }
-  reset() {
     this.format_version = 1;
     this.mode = modes.std;
     this.title = this.title_unicode = '';
@@ -30,7 +32,6 @@ class beatmap {
     } else {
       this.timing_points.length = 0;
     }
-    return this;
   }
   // max combo calculation
   //
