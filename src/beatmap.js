@@ -33,22 +33,22 @@ class beatmap {
       this.timing_points.length = 0;
     }
   }
-  // max combo calculation
-  //
-  // this is given by ncircles + nspinners + nsliders * 2
-  // (heads and tails) + nsliderticks
-  //
-  // we approximate slider ticks by calculating the
-  // playfield pixels per beat for the current section
-  // and dividing the total distance travelled by
-  // pixels per beat. this gives us the number of beats,
-  // which multiplied by the tick rate gives use the
-  // tick count.
+
   /**
    * Calculates Maximum Combo of the map.
    * @return {int} Maximum Combo of a map.
    */
   maxCombo() {
+    // this is given by ncircles + nspinners + nsliders * 2
+    // (heads and tails) + nsliderticks
+    //
+    // we approximate slider ticks by calculating the
+    // playfield pixels per beat for the current section
+    // and dividing the total distance travelled by
+    // pixels per beat. this gives us the number of beats,
+    // which multiplied by the tick rate gives use the
+    // tick count.
+
     let res = this.ncircles + this.nspinners;
     let tindex = -1;
     let tnext = Number.NEGATIVE_INFINITY;
