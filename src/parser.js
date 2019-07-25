@@ -3,9 +3,11 @@ const {beatmap} = require('./beatmap');
 const {isUndefined} = require('./interals');
 const {timing} = require('./timing');
 const {hitobject, objtypes, circle, slider} = require('./hitobjects');
-// beatmap parser
-// ----------------------------------------------------------------
-// partial .osu file parser built around pp calculation
+
+
+/**
+ * partial .osu file parser built around pp calculation
+ */
 class parser {
   constructor() {
     // once you're done feeding data to the parser, you will find
