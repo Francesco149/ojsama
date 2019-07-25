@@ -1,4 +1,4 @@
-const {objtypes} = require('./hitobjects');
+const {Objtypes} = require('./hitobjects');
 
 const modes = {
   std: 0,
@@ -7,7 +7,7 @@ const modes = {
 /**
  * Partial beatmap structure with just enough data for pp calculation.
  */
-class beatmap {
+class Beatmap {
   /**
    * Constructor for a beatmap.
    */
@@ -55,7 +55,7 @@ class beatmap {
     let pxPerBeat = 0.0;
     for (let i = 0; i < this.objects.length; ++i) {
       const obj = this.objects[i];
-      if (!(obj.type & objtypes.slider)) {
+      if (!(obj.type & Objtypes.slider)) {
         continue;
       }
       // keep track of the current timing point without
@@ -138,5 +138,5 @@ class beatmap {
 
 module.exports = {
   modes: modes,
-  beatmap: beatmap,
+  Beatmap: Beatmap,
 };

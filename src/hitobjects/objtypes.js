@@ -3,12 +3,12 @@
  * contain other flags so you should always check type with
  * ```if (type & objtypes.circle) { ... }```
  */
-const objtypes = {
+const Objtypes = {
   circle: 1 << 0,
   slider: 1 << 1,
   spinner: 1 << 3,
 };
 
 module.exports = {
-  objtypes: objtypes,
+  Objtypes: Objtypes,
 };

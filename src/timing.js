@@ -5,7 +5,7 @@
  * change = false and setting ms_per_beat to a negative value which
  * represents the bpm multiplier as ```-100 * bpm_multiplier```
  */
-class timing {
+class Timing {
   /**
    * Timing Class Constructor.
    * @param {Object} values An Object of Values for construction of Timing.
@@ -28,5 +28,5 @@ class timing {
 }
 
 module.exports = {
-  timing: timing,
+  Timing: Timing,
 };

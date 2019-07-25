@@ -1,19 +1,25 @@
 const {log} = require('./interals');
-const {beatmap} = require('./beatmap');
+const {Beatmap} = require('./beatmap');
 const {isUndefined} = require('./interals');
-const {timing} = require('./timing');
-const {hitobject, objtypes, circle, slider} = require('./hitobjects');
+const {Timing} = require('./timing');
+const {Hitobject, Objtypes, Circle, Slider} = require('./hitobjects');
 
 /**
  * partial .osu file parser built around pp calculation
  */
 class parser {
+  /**
+   *
+   */
   constructor() {
     // once you're done feeding data to the parser, you will find
     // the parsed beatmap in this object
-    this.map = new beatmap();
+    this.map = new Beatmap();
     this.reset();
   }
+  /**
+   * @return {Object}
+   */
   reset() {
     // parser state: number of lines fed, last touched line,
     // last touched substring and the current section name
@@ -30,7 +36,12 @@ class parser {
   //
   // both feed functions return the parser instance for easy
   // chaining
-  feed_line(line) {
+  /**
+   *
+   * @param {*} line
+   * @return {Object}
+   */
+  feedLine(line) {
     this.curline = this.lastpos = line;
     ++this.nline;
     // comments
@@ -69,13 +80,13 @@ class parser {
         this._difficulty();
         break;
       case 'TimingPoints':
-        this._timing_points();
+        this._timingPoints();
         break;
       case 'HitObjects':
         this._objects();
         break;
       default:
-        var fmtpos = line.indexOf('file format v');
+        const fmtpos = line.indexOf('file format v');
         if (fmtpos < 0) {
           break;
         }
@@ -84,15 +95,23 @@ class parser {
     }
     return this;
   }
+  /**
+   *
+   * @param {*} str
+   * @return {Object}
+   */
   feed(str) {
-    var lines = (lines = str.split('\n'));
+    let lines = (lines = str.split('\n'));
     for (let i = 0; i < lines.length; ++i) {
-      this.feed_line(lines[i]);
+      this.feedLine(lines[i]);
     }
     return this;
   }
   // returns the parser state formatted into a string. useful
   // for debugging syntax errors
+  /**
+   * @return {string}
+   */
   toString() {
     return (
       'at line ' +
@@ -106,14 +125,25 @@ class parser {
     );
   }
   // _(internal)_ parser utilities
+  /**
+   *
+   * @param {*} str
+   * @return {Object}
+   */
   _setpos(str) {
     this.lastpos = str.trim();
     return this.lastpos;
   }
+  /**
+   *
+   */
   _warn() {
     log.warn.apply(null, Array.prototype.slice.call(arguments));
     log.warn(this.toString());
   }
+  /**
+   * @return {Object}
+   */
   _property() {
     const s = this.curline.split(':', 2);
     s[0] = this._setpos(s[0]);
@@ -121,6 +151,9 @@ class parser {
     return s;
   }
   // _(internal)_ line parsers for each section
+  /**
+   *
+   */
   _metadata() {
     const p = this._property();
     switch (p[0]) {
@@ -144,6 +177,9 @@ class parser {
         break;
     }
   }
+  /**
+   *
+   */
   _general() {
     const p = this._property();
     if (p[0] !== 'Mode') {
@@ -151,6 +187,9 @@ class parser {
     }
     this.map.mode = parseInt(this._setpos(p[1]));
   }
+  /**
+   *
+   */
   _difficulty() {
     const p = this._property();
     switch (p[0]) {
@@ -174,7 +213,10 @@ class parser {
         break;
     }
   }
-  _timing_points() {
+  /**
+   *
+   */
+  _timingPoints() {
     const s = this.curline.split(',');
     if (s.length > 8) {
       this._warn('timing point with trailing values');
@@ -182,7 +224,7 @@ class parser {
       this._warn('ignoring malformed timing point');
       return;
     }
-    const t = new timing({
+    const t = new Timing({
       time: parseFloat(this._setpos(s[0])),
       ms_per_beat: parseFloat(this._setpos(s[1])),
     });
@@ -191,6 +233,9 @@ class parser {
     }
     this.map.timing_points.push(t);
   }
+  /**
+   *
+   */
   _objects() {
     const s = this.curline.split(',');
     let d;
@@ -200,7 +245,7 @@ class parser {
       this._warn('ignoring malformed hitobject');
       return;
     }
-    const obj = new hitobject({
+    const obj = new Hitobject({
       time: parseFloat(this._setpos(s[2])),
       type: parseInt(this._setpos(s[3])),
     });
@@ -208,24 +253,24 @@ class parser {
       this._warn('ignoring malformed hitobject');
       return;
     }
-    if ((obj.type & objtypes.circle) != 0) {
+    if ((obj.type & Objtypes.circle) != 0) {
       ++this.map.ncircles;
-      d = obj.data = new circle({
+      d = obj.data = new Circle({
         pos: [parseFloat(this._setpos(s[0])), parseFloat(this._setpos(s[1]))],
       });
       if (isNaN(d.pos[0]) || isNaN(d.pos[1])) {
         this._warn('ignoring malformed circle');
         return;
       }
-    } else if ((obj.type & objtypes.spinner) != 0) {
+    } else if ((obj.type & Objtypes.spinner) != 0) {
       ++this.map.nspinners;
-    } else if ((obj.type & objtypes.slider) != 0) {
+    } else if ((obj.type & Objtypes.slider) != 0) {
       if (s.length < 8) {
         this._warn('ignoring malformed slider');
         return;
       }
       ++this.map.nsliders;
-      d = obj.data = new slider({
+      d = obj.data = new Slider({
         pos: [parseFloat(this._setpos(s[0])), parseFloat(this._setpos(s[1]))],
         repetitions: parseInt(this._setpos(s[6])),
         distance: parseFloat(this._setpos(s[7])),

@@ -4,7 +4,7 @@
  * object-specific properties are stored in data, which can be
  * an instance of circle, slider, or null
  */
-class hitobject {
+class Hitobject {
   /**
    * @param {Object} values Object used to Construct the HitObject.
    */
@@ -35,5 +35,5 @@ class hitobject {
 }
 
 module.exports = {
-  hitobject: hitobject,
+  Hitobject: Hitobject,
 };

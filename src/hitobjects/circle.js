@@ -2,7 +2,7 @@
  * This is a class representing Circles.
  * Stored in the objects are in playfield coordinates (512*384 rect)
  */
-class circle {
+class Circle {
   /**
    * Constructs the circle Object.
    * @param {Object} values Object Representing Postion.
@@ -20,5 +20,5 @@ class circle {
 }
 
 module.exports = {
-  circle: circle,
+  Circle: Circle,
 };

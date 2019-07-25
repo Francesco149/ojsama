@@ -1,5 +1,5 @@
 const {arrayToFixed} = require('./interals');
-const {objtypes} = require('./hitobjects');
+const {Objtypes} = require('./hitobjects');
 const {modes} = require('./beatmap');
 // difficulty calculation
 // ----------------------------------------------------------------
@@ -325,7 +325,7 @@ class std_diff {
       if (this.objects[i].is_single) {
         ++this.nsingles;
       }
-      if (!(obj.type & (objtypes.circle | objtypes.slider))) {
+      if (!(obj.type & (Objtypes.circle | Objtypes.slider))) {
         continue;
       }
       const interval = (obj.time - prev.time) / speed_mul;
@@ -423,7 +423,7 @@ class std_diff {
     const time_elapsed = (obj.time - prev_obj.time) / speed_mul;
     const decay = Math.pow(DECAY_BASE[type], time_elapsed / 1000.0);
     diffobj.delta_time = time_elapsed;
-    if ((obj.type & (objtypes.slider | objtypes.circle)) != 0) {
+    if ((obj.type & (Objtypes.slider | Objtypes.circle)) != 0) {
       const distance = vec_len(vec_sub(diffobj.normpos, prev_diffobj.normpos));
       diffobj.d_distance = distance;
       if (type == DIFF_SPEED) {
@@ -532,9 +532,9 @@ class std_diff {
       }
       var pos;
       const obj = diffobjs[i].obj;
-      if (obj.type & objtypes.spinner) {
+      if (obj.type & Objtypes.spinner) {
         diffobjs[i].normpos = normalized_center.slice();
-      } else if (obj.type & (objtypes.slider | objtypes.circle)) {
+      } else if (obj.type & (Objtypes.slider | Objtypes.circle)) {
         diffobjs[i].normpos = vec_mul(obj.data.pos, scaling_vec);
       }
       if (i >= 2) {

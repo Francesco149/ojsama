@@ -1,11 +1,11 @@
-const {circle} = require('./circle');
-const {slider} = require('./slider');
-const {hitobject} = require('./hitobject');
-const {objtypes} = require('./objtypes')
+const {Circle} = require('./circle');
+const {Slider} = require('./slider');
+const {Hitobject} = require('./hitobject');
+const {Objtypes} = require('./objtypes')
 
 module.exports = {
-  objtypes: objtypes,
-  circle: circle,
-  slider: slider,
-  hitobject: hitobject,
+  Objtypes: Objtypes,
+  Circle: Circle,
+  Slider: Slider,
+  Hitobject: Hitobject,
 };

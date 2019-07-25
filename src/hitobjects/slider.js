@@ -5,7 +5,7 @@
  * note that 1 repetition means no repeats (1 loop)
  * per tick using timing information and slider velocity.
  */
-class slider {
+class Slider {
   /**
    * @param {Object} values For Constructing the slider.
    */
@@ -24,5 +24,5 @@ class slider {
 }
 
 module.exports = {
-  slider: slider,
+  Slider: Slider,
 };

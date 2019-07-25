@@ -25,7 +25,7 @@ for (let i = 2; i < argv.length; ++i) {
 const parser = new osu.parser();
 readline
     .createInterface({input: process.stdin, terminal: false})
-    .on('line', parser.feed_line.bind(parser))
+    .on('line', parser.feedLine.bind(parser))
     .on('close', function() {
       const map = parser.map;
       console.log(map.toString());
