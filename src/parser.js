@@ -4,7 +4,6 @@ const {isUndefined} = require('./interals');
 const {timing} = require('./timing');
 const {hitobject, objtypes, circle, slider} = require('./hitobjects');
 
-
 /**
  * partial .osu file parser built around pp calculation
  */
@@ -16,7 +15,6 @@ class parser {
     this.reset();
   }
   reset() {
-    this.map.reset();
     // parser state: number of lines fed, last touched line,
     // last touched substring and the current section name
     //
@@ -246,4 +244,6 @@ class parser {
   }
 }
 
-module.exports = parser;
+module.exports = {
+  parser: parser,
+};
