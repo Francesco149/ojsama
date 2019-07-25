@@ -19,14 +19,11 @@ class timing {
   }
   /**
    * Function to return a String from the current Instance.
-   * Debugging only.
+   * Debugging Puposes only.
    * @return {String} Constructued String.
    */
   toString() {
-    return JSON.stringify({
-      time: this.time.toFixed(2),
-      ms_per_beat: this.ms_per_beat.toFixed(2),
-    });
+    return JSON.stringify(this);
   }
 }
 
