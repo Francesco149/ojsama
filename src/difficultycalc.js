@@ -614,4 +614,6 @@ module.exports = {
   modbits: modbits,
   std_diff: std_diff,
   std_beatmap_stats: std_beatmap_stats,
+  std_diff_hitobject: std_diff_hitobject,
+  diff: diff,
 };
