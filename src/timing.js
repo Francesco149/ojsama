@@ -1,30 +1,32 @@
-// timing point
-// ----------------------------------------------------------------
-// defines parameters such as timing and sampleset for an interval.
-// for pp calculation we only need time and ms_per_beat
-//
-// it can inherit from its preceeding point by having
-// change = false and setting ms_per_beat to a negative value which
-// represents the bpm multiplier as ```-100 * bpm_multiplier```
-
+/**
+ * Defines parameters such as timing and sampleset for an interval.
+ * for pp calculation we only need time and ms_per_beat
+ * it can inherit from its preceeding point by having
+ * change = false and setting ms_per_beat to a negative value which
+ * represents the bpm multiplier as ```-100 * bpm_multiplier```
+ */
 class timing {
+  /**
+   * Timing Class Constructor.
+   * @param {Object} values An Object of Values for construction of Timing.
+   */
   constructor(values) {
     this.time = values.time || 0.0;
-    this.ms_per_beat = values.ms_per_beat;
-    if (this.ms_per_beat === undefined) {
-      this.ms_per_beat = 600.0;
-    }
-    this.change = values.change;
-    if (this.change === undefined) {
-      this.change = true;
-    }
+    this.ms_per_beat =
+      values.ms_per_beat === undefined ? 600.0 : values.ms_per_beat;
+
+    this.change = values.change===undefined? true:values.change;
+
   }
+  /**
+   * Function to return a String from the current Instance.
+   * @return {String} Constructued String.
+   */
   toString() {
     return (
       '{ time: ' +
       this.time.toFixed(2) +
-      ', ' +
-      'ms_per_beat: ' +
+      ', ms_per_beat: ' +
       this.ms_per_beat.toFixed(2) +
       ' }'
     );
