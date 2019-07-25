@@ -8,19 +8,21 @@ const {modes} = require('./beatmap');
 // NOTE: td is touch device, but it's also the value for the
 // legacy no video mod
 
-const modbits = {
-  nomod: 0,
-  nf: 1 << 0,
-  ez: 1 << 1,
-  td: 1 << 2,
-  hd: 1 << 3,
-  hr: 1 << 4,
-  dt: 1 << 6,
-  ht: 1 << 8,
-  nc: 1 << 9,
-  fl: 1 << 10,
-  so: 1 << 12,
-};
+class modbits {
+  constructor() {
+    this.nomod = 0;
+    this.nf = 1 << 0;
+    this.ez = 1 << 1;
+    this.td = 1 << 2;
+    this.hd = 1 << 3;
+    this.hr = 1 << 4;
+    this.dt = 1 << 6;
+    this.ht = 1 << 8;
+    this.nc = 1 << 9;
+    this.fl = 1 << 10;
+    this.so = 1 << 12;
+  }
+}
 
 // construct the mods bitmask from a string such as "HDHR"
 
