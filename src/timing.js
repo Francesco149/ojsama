@@ -27,4 +27,6 @@ class timing {
   }
 }
 
-module.exports = timing;
+module.exports = {
+  timing: timing,
+};
