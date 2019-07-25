@@ -15,21 +15,18 @@ class timing {
     this.ms_per_beat =
       values.ms_per_beat === undefined ? 600.0 : values.ms_per_beat;
 
-    this.change = values.change===undefined? true:values.change;
-
+    this.change = values.change === undefined ? true : values.change;
   }
   /**
    * Function to return a String from the current Instance.
+   * Debugging only.
    * @return {String} Constructued String.
    */
   toString() {
-    return (
-      '{ time: ' +
-      this.time.toFixed(2) +
-      ', ms_per_beat: ' +
-      this.ms_per_beat.toFixed(2) +
-      ' }'
-    );
+    return JSON.stringify({
+      time: this.time.toFixed(2),
+      ms_per_beat: this.ms_per_beat.toFixed(2),
+    });
   }
 }
 
