@@ -44,6 +44,10 @@ class beatmap {
   // pixels per beat. this gives us the number of beats,
   // which multiplied by the tick rate gives use the
   // tick count.
+  /**
+   * Calculates Maximum Combo of the map.
+   * @return {int} Maximum Combo of a map.
+   */
   max_combo() {
     let res = this.ncircles + this.nspinners;
     let tindex = -1;
@@ -91,6 +95,10 @@ class beatmap {
     }
     return res;
   }
+  /**
+   * Used for Debug.
+   * @return {String}
+   */
   toString() {
     let res = this.artist + ' - ' + this.title + ' [';
     if (this.title_unicode || this.artist_unicode) {
