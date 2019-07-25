@@ -19,4 +19,6 @@ class circle {
   }
 }
 
-module.exports = circle;
+module.exports = {
+  circle: circle,
+};

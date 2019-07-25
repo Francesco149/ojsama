@@ -34,4 +34,6 @@ class hitobject {
   }
 }
 
-module.exports = hitobject;
+module.exports = {
+  hitobject: hitobject,
+};

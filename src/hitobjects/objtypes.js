@@ -9,4 +9,6 @@ const objtypes = {
   spinner: 1 << 3,
 };
 
-module.exports = objtypes;
+module.exports = {
+  objtypes: objtypes,
+};
