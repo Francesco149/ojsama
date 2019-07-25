@@ -422,3 +422,9 @@ function ppv2(params) {
     message: 'this gamemode is not yet supported',
   };
 }
+
+module.exports = {
+  std_accuracy: std_accuracy,
+  std_ppv2: std_ppv2,
+  ppv2: ppv2,
+};
