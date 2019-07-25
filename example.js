@@ -44,7 +44,7 @@ readline
         acc_percent: acc_percent,
       });
 
-      const max_combo = map.max_combo();
+      const max_combo = map.maxCombo();
       combo = combo || max_combo;
 
       console.log(pp.computed_accuracy.toString());

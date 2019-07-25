@@ -48,11 +48,11 @@ class beatmap {
    * Calculates Maximum Combo of the map.
    * @return {int} Maximum Combo of a map.
    */
-  max_combo() {
+  maxCombo() {
     let res = this.ncircles + this.nspinners;
     let tindex = -1;
     let tnext = Number.NEGATIVE_INFINITY;
-    let px_per_beat = 0.0;
+    let pxPerBeat = 0.0;
     for (let i = 0; i < this.objects.length; ++i) {
       const obj = this.objects[i];
       if (!(obj.type & objtypes.slider)) {
@@ -68,25 +68,25 @@ class beatmap {
           tnext = Number.POSITIVE_INFINITY;
         }
         const t = this.timing_points[tindex];
-        let sv_multiplier = 1.0;
+        let svMultiplier = 1.0;
         if (!t.change && t.ms_per_beat < 0) {
-          sv_multiplier = -100.0 / t.ms_per_beat;
+          svMultiplier = -100.0 / t.ms_per_beat;
         }
         // beatmaps older than format v8 don't apply
         // the bpm multiplier to slider ticks
         if (this.format_version < 8) {
-          px_per_beat = this.sv * 100.0;
+          pxPerBeat = this.sv * 100.0;
         } else {
-          px_per_beat = this.sv * 100.0 * sv_multiplier;
+          pxPerBeat = this.sv * 100.0 * svMultiplier;
         }
       }
       const sl = obj.data;
-      const num_beats = (sl.distance * sl.repetitions) / px_per_beat;
+      const numBeats = (sl.distance * sl.repetitions) / pxPerBeat;
       // subtract an epsilon to prevent accidental
       // ceiling of whole values such as 2.00....1 -> 3 due
       // to rounding errors
       let ticks = Math.ceil(
-          ((num_beats - 0.1) / sl.repetitions) * this.tick_rate
+          ((numBeats - 0.1) / sl.repetitions) * this.tick_rate
       );
       --ticks;
       ticks *= sl.repetitions;
@@ -129,7 +129,7 @@ class beatmap {
       this.nspinners +
       ' spinners' +
       '\n' +
-      this.max_combo() +
+      this.maxCombo() +
       ' max combo' +
       '\n';
     return res;

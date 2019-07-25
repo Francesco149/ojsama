@@ -167,7 +167,7 @@ std_ppv2.prototype.calc = function(params) {
 
   let stars = params.stars;
   let map = params.map;
-  let max_combo, nsliders, ncircles, nobjects, base_ar, base_od;
+  let maxCombo, nsliders, ncircles, nobjects, base_ar, base_od;
   let mods;
   let aim_stars, speed_stars;
 
@@ -176,7 +176,7 @@ std_ppv2.prototype.calc = function(params) {
   }
 
   if (map) {
-    max_combo = map.max_combo();
+    maxCombo = map.maxCombo();
     nsliders = map.nsliders;
     ncircles = map.ncircles;
     nobjects = map.objects.length;
@@ -187,8 +187,8 @@ std_ppv2.prototype.calc = function(params) {
       stars = new std_diff().calc(params);
     }
   } else {
-    max_combo = params.max_combo;
-    if (!max_combo || max_combo < 0) {
+    maxCombo = params.max_combo;
+    if (!maxCombo || maxCombo < 0) {
       throw new TypeError('max_combo must be > 0');
     }
 
@@ -235,7 +235,7 @@ std_ppv2.prototype.calc = function(params) {
 
   let combo = params.combo;
   if (combo === undefined) {
-    combo = max_combo - nmiss;
+    combo = maxCombo - nmiss;
   }
 
   const score_version = params.score_version || 1;
@@ -250,7 +250,7 @@ std_ppv2.prototype.calc = function(params) {
   }
 
   const miss_penality = Math.pow(0.97, nmiss);
-  const combo_break = Math.pow(combo, 0.8) / Math.pow(max_combo, 0.8);
+  const combo_break = Math.pow(combo, 0.8) / Math.pow(maxCombo, 0.8);
   const mapstats = new std_beatmap_stats({
     ar: base_ar,
     od: base_od,
