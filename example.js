@@ -1,5 +1,5 @@
 const readline = require('readline');
-const osu = require('./src');
+const {osu} = require('./src');
 
 let mods = osu.modbits.none;
 let acc_percent;
@@ -22,7 +22,7 @@ for (let i = 2; i < argv.length; ++i) {
   }
 }
 
-const parser = new osu.parser();
+const parser = new osu.Parser();
 readline
     .createInterface({input: process.stdin, terminal: false})
     .on('line', parser.feedLine.bind(parser))
@@ -34,7 +34,7 @@ readline
         console.log('+' + osu.modbits.string(mods));
       }
 
-      const stars = new osu.diff().calc({map: map, mods: mods});
+      const stars = new osu.Diff().calc({map: map, mods: mods});
       console.log(stars.toString());
 
       const pp = osu.ppv2({
