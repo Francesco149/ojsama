@@ -1,14 +1,16 @@
 const {arrayToFixed} = require('./interals');
 const {Objtypes} = require('./hitobjects');
 const {modes} = require('./beatmap');
-// difficulty calculation
-// ----------------------------------------------------------------
 
-// mods bitmask constants
-// NOTE: td is touch device, but it's also the value for the
-// legacy no video mod
-
+/**
+ * Mods bitmask constants
+ * NOTE: td is touch device, but it's also the value for the
+ * legacy no video mod
+ */
 class modbits {
+  /**
+   *
+   */
   constructor() {
     this.nomod = 0;
     this.nf = 1 << 0;
@@ -22,15 +24,41 @@ class modbits {
     this.fl = 1 << 10;
     this.so = 1 << 12;
   }
-}
+  /**
+   * construct the mods bitmask from a string such as "HDHR"
+   * @param {String} str
+   * @return {int}
+   */
+  static fromString(str) {
+    let mask = 0;
+    str = str.toLowerCase();
+    while (str != '') {
+      let nchars = 1;
+      for (const property in modbits) {
+        if (property.length != 2) {
+          continue;
+        }
+        if (!modbits.hasOwnProperty(property)) {
+          continue;
+        }
+        if (str.startsWith(property)) {
+          mask |= modbits[property];
+          nchars = 2;
+          break;
+        }
+      }
+      str = str.slice(nchars);
+    }
+    return mask;
+  }
 
-// construct the mods bitmask from a string such as "HDHR"
-
-modbits.from_string = function(str) {
-  let mask = 0;
-  str = str.toLowerCase();
-  while (str != '') {
-    let nchars = 1;
+  /**
+   * convert mods bitmask into a string, such as "HDHR"
+   * @param {*} mods
+   * @return {String}
+   */
+  static string(mods) {
+    let res = '';
     for (const property in modbits) {
       if (property.length != 2) {
         continue;
@@ -38,37 +66,16 @@ modbits.from_string = function(str) {
       if (!modbits.hasOwnProperty(property)) {
         continue;
       }
-      if (str.startsWith(property)) {
-        mask |= modbits[property];
-        nchars = 2;
-        break;
+      if (mods & modbits[property]) {
+        res += property.toUpperCase();
       }
     }
-    str = str.slice(nchars);
-  }
-  return mask;
-};
-
-// convert mods bitmask into a string, such as "HDHR"
-
-modbits.string = function(mods) {
-  let res = '';
-  for (const property in modbits) {
-    if (property.length != 2) {
-      continue;
+    if (res.indexOf('DT') >= 0 && res.indexOf('NC') >= 0) {
+      res = res.replace('DT', '');
     }
-    if (!modbits.hasOwnProperty(property)) {
-      continue;
-    }
-    if (mods & modbits[property]) {
-      res += property.toUpperCase();
-    }
+    return res;
   }
-  if (res.indexOf('DT') >= 0 && res.indexOf('NC') >= 0) {
-    res = res.replace('DT', '');
-  }
-  return res;
-};
+}
 
 modbits.speed_changing = modbits.dt | modbits.ht | modbits.nc;
 modbits.map_changing = modbits.hr | modbits.ez | modbits.speed_changing;
@@ -89,9 +96,15 @@ const AR_MS_STEP2 = (AR5_MS - AR10_MS) / 5.0;
 // _(internal)_
 // utility functions to apply speed and flat multipliers to
 // stats where speed changes apply (ar and od)
-
-function modify_ar(base_ar, speed_mul, multiplier) {
-  let ar = base_ar;
+/**
+ *
+ * @param {*} baseAR
+ * @param {*} speedMul
+ * @param {*} multiplier
+ * @return {Object}
+ */
+function modifyAR(baseAR, speedMul, multiplier) {
+  let ar = baseAR;
   ar *= multiplier;
 
   // convert AR into milliseconds window
@@ -104,7 +117,7 @@ function modify_ar(base_ar, speed_mul, multiplier) {
   // -5->11 for AR
 
   arms = Math.min(AR0_MS, Math.max(AR10_MS, arms));
-  arms /= speed_mul;
+  arms /= speedMul;
 
   ar =
     arms > AR5_MS
@@ -113,18 +126,36 @@ function modify_ar(base_ar, speed_mul, multiplier) {
   return ar;
 }
 
-function modify_od(base_od, speed_mul, multiplier) {
-  let od = base_od;
+/**
+ *
+ * @param {*} baseOD
+ * @param {*} speedMul
+ * @param {*} multiplier
+ * @return {*}
+ */
+function modifyOD(baseOD, speedMul, multiplier) {
+  let od = baseOD;
   od *= multiplier;
   let odms = OD0_MS - Math.ceil(OD_MS_STEP * od);
   odms = Math.min(OD0_MS, Math.max(OD10_MS, odms));
-  odms /= speed_mul;
+  odms /= speedMul;
   od = (OD0_MS - odms) / OD_MS_STEP;
   return od;
 }
 
 // stores osu!standard beatmap stats
-class std_beatmap_stats {
+
+/**
+ *
+ *
+ * @class std_beatmap_stats
+ */
+class StdBeatmapStats {
+  /**
+   *Creates an instance of std_beatmap_stats.
+   * @param {*} values
+   * @memberof std_beatmap_stats
+   */
   constructor(values) {
     this.ar = values.ar;
     this.od = values.od;
@@ -138,11 +169,19 @@ class std_beatmap_stats {
   // returns the modified stats and the speed multiplier.
   //
   // unspecified stats are ignored and not returned
-  with_mods(mods) {
+
+  /**
+   *
+   *
+   * @param {*} mods
+   * @memberof std_beatmap_stats
+   * @return {int}
+   */
+  withMods(mods) {
     if (this._mods_cache[mods]) {
       return this._mods_cache[mods];
     }
-    const stats = (this._mods_cache[mods] = new std_beatmap_stats(this));
+    const stats = (this._mods_cache[mods] = new StdBeatmapStats(this));
     if (!(mods & modbits.map_changing)) {
       return stats;
     }
@@ -152,14 +191,14 @@ class std_beatmap_stats {
     if (mods & modbits.ht) {
       stats.speed_mul *= 0.75;
     }
-    let od_ar_hp_multiplier = 1.0;
-    if (mods & modbits.hr) od_ar_hp_multiplier = 1.4;
-    if (mods & modbits.ez) od_ar_hp_multiplier *= 0.5;
+    let odarhpMul = 1.0;
+    if (mods & modbits.hr) odarhpMul = 1.4;
+    if (mods & modbits.ez) odarhpMul *= 0.5;
     if (stats.ar) {
-      stats.ar = modify_ar(stats.ar, stats.speed_mul, od_ar_hp_multiplier);
+      stats.ar = modifyAR(stats.ar, stats.speed_mul, odarhpMul);
     }
     if (stats.od) {
-      stats.od = modify_od(stats.od, stats.speed_mul, od_ar_hp_multiplier);
+      stats.od = modifyOD(stats.od, stats.speed_mul, odarhpMul);
     }
     if (stats.cs) {
       if (mods & modbits.hr) stats.cs *= 1.3;
@@ -167,7 +206,7 @@ class std_beatmap_stats {
       stats.cs = Math.min(10.0, stats.cs);
     }
     if (stats.hp) {
-      stats.hp *= od_ar_hp_multiplier;
+      stats.hp *= odarhpMul;
       stats.hp = Math.min(10.0, stats.hp);
     }
     return stats;
@@ -176,11 +215,29 @@ class std_beatmap_stats {
 
 // osu! standard hit object with difficulty calculation values
 // obj is the underlying hitobject
-class std_diff_hitobject {
+
+/**
+ *
+ *
+ * @class std_diff_hitobject
+ */
+class StdDiffHitobject {
+  /**
+   *Creates an instance of std_diff_hitobject.
+   * @param {*} obj
+   * @memberof std_diff_hitobject
+   */
   constructor(obj) {
     this.obj = obj;
     this.reset();
   }
+
+  /**
+   *
+   *
+   * @return {*}
+   * @memberof std_diff_hitobject
+   */
   reset() {
     this.strains = [0.0, 0.0];
     this.normpos = [0.0, 0.0];
@@ -190,6 +247,13 @@ class std_diff_hitobject {
     this.d_distance = 0.0;
     return this;
   }
+
+  /**
+   *
+   *
+   * @return {*}
+   * @memberof std_diff_hitobject
+   */
   toString() {
     return (
       '{ strains: [' +
@@ -206,16 +270,46 @@ class std_diff_hitobject {
 // _(internal)_
 // 2D point operations
 
-function vec_sub(a, b) {
+/**
+ *
+ *
+ * @param {*} a
+ * @param {*} b
+ * @return {*}
+ */
+function vecSub(a, b) {
   return [a[0] - b[0], a[1] - b[1]];
 }
-function vec_mul(a, b) {
+
+/**
+ *
+ *
+ * @param {*} a
+ * @param {*} b
+ * @return {*}
+ */
+function vecMul(a, b) {
   return [a[0] * b[0], a[1] * b[1]];
 }
-function vec_len(v) {
+
+/**
+ *
+ *
+ * @param {*} v
+ * @return {*}
+ */
+function vecLen(v) {
   return Math.sqrt(v[0] * v[0] + v[1] * v[1]);
 }
-function vec_dot(a, b) {
+
+/**
+ *
+ *
+ * @param {*} a
+ * @param {*} b
+ * @return {*}
+ */
+function vecDot(a, b) {
   return a[0] * b[0] + a[1] * b[1];
 }
 
@@ -232,14 +326,24 @@ const STRAIN_STEP = 400.0;
 const CIRCLESIZE_BUFF_THRESHOLD = 30.0;
 const STAR_SCALING_FACTOR = 0.0675;
 const PLAYFIELD_SIZE = [512.0, 384.0];
-const PLAYFIELD_CENTER = vec_mul(PLAYFIELD_SIZE, [0.5, 0.5]);
+const PLAYFIELD_CENTER = vecMul(PLAYFIELD_SIZE, [0.5, 0.5]);
 const EXTREME_SCALING_FACTOR = 0.5;
 
 // osu!standard difficulty calculator
 //
 // does not account for sliders because slider calculations are
 // expensive and not worth the small accuracy increase
-class std_diff {
+
+/**
+ *
+ *
+ * @class std_diff
+ */
+class StdDiff {
+  /**
+   *Creates an instance of std_diff.
+   * @memberof std_diff
+   */
   constructor() {
     this.objects = [];
     this.reset();
@@ -249,6 +353,12 @@ class std_diff {
     this.mods = modbits.nomod;
     this.singletap_threshold = 125.0;
   }
+
+  /**
+   *
+   *
+   * @memberof std_diff
+   */
   reset() {
     // star rating
     this.total = 0.0;
@@ -267,7 +377,16 @@ class std_diff {
     // calculation which could be useful
     this.nsingles_threshold = 0;
   }
-  _length_bonus(stars, difficulty) {
+
+  /**
+   *
+   *
+   * @param {*} stars
+   * @param {*} difficulty
+   * @return {*}
+   * @memberof std_diff
+   */
+  _lengthBonus(stars, difficulty) {
     return 0.32 + 0.5 * (Math.log10(difficulty + stars) - Math.log10(stars));
   }
   // calculate difficulty and return current instance, which
@@ -282,26 +401,34 @@ class std_diff {
   //   for singletaps. defaults to 240 bpm 1/2 singletaps
   //   ```(60000 / 240) / 2``` .
   //   see nsingles_threshold
+
+  /**
+   *
+   *
+   * @param {*} params
+   * @return {*}
+   * @memberof std_diff
+   */
   calc(params) {
     const map = (this.map = params.map || this.map);
     if (!map) {
       throw new TypeError('no map given');
     }
     const mods = (this.mods = params.mods || this.mods);
-    var singletap_threshold = (this.singletap_threshold =
-      params.singletap_threshold || singletap_threshold);
+    const singletapThreshold = (this.singletap_threshold =
+      params.singletap_threshold || this.singletap_threshold);
     // apply mods to the beatmap's stats
-    const stats = new std_beatmap_stats({cs: map.cs}).with_mods(mods);
-    const speed_mul = stats.speed_mul;
-    this._init_objects(this.objects, map, stats.cs);
-    const speed = this._calc_individual(DIFF_SPEED, this.objects, speed_mul);
+    const stats = new StdBeatmapStats({cs: map.cs}).withMods(mods);
+    const speedMul = stats.speed_mul;
+    this._initObjects(this.objects, map, stats.cs);
+    const speed = this._calcIndividual(DIFF_SPEED, this.objects, speedMul);
     this.speed = speed.difficulty;
     this.speed_difficulty = speed.total;
-    const aim = this._calc_individual(DIFF_AIM, this.objects, speed_mul);
+    const aim = this._calcIndividual(DIFF_AIM, this.objects, speedMul);
     this.aim = aim.difficulty;
     this.aim_difficulty = aim.total;
-    this.aim_length_bonus = this._length_bonus(this.aim, this.aim_difficulty);
-    this.speed_length_bonus = this._length_bonus(
+    this.aim_length_bonus = this._lengthBonus(this.aim, this.aim_difficulty);
+    this.speed_length_bonus = this._lengthBonus(
         this.speed,
         this.speed_difficulty
     );
@@ -328,13 +455,20 @@ class std_diff {
       if (!(obj.type & (Objtypes.circle | Objtypes.slider))) {
         continue;
       }
-      const interval = (obj.time - prev.time) / speed_mul;
-      if (interval >= singletap_threshold) {
+      const interval = (obj.time - prev.time) / speedMul;
+      if (interval >= singletapThreshold) {
         ++this.nsingles_threshold;
       }
     }
     return this;
   }
+
+  /**
+   *
+   *
+   * @return {*}
+   * @memberof std_diff
+   */
   toString() {
     return (
       this.total.toFixed(2) +
@@ -345,101 +479,121 @@ class std_diff {
       ' speed)'
     );
   }
-  _spacing_weight(
+
+  /**
+   *
+   *
+   * @param {*} type
+   * @param {*} distance
+   * @param {*} deltaTime
+   * @param {*} prevDistance
+   * @param {*} prevDeltaTime
+   * @param {*} angle
+   * @return {*}
+   * @memberof std_diff
+   */
+  _spacingWeight(
       type,
       distance,
-      delta_time,
-      prev_distance,
-      prev_delta_time,
+      deltaTime,
+      prevDistance,
+      prevDeltaTime,
       angle
   ) {
-    let angle_bonus;
-    const strain_time = Math.max(delta_time, 50.0);
+    let angleBonus;
+    const strainTime = Math.max(deltaTime, 50.0);
     switch (type) {
       case DIFF_AIM: {
-        const prev_strain_time = Math.max(prev_delta_time, 50.0);
+        const prevStrainTime = Math.max(prevDeltaTime, 50.0);
         let result = 0.0;
         if (angle !== null && angle > AIM_ANGLE_BONUS_BEGIN) {
-          angle_bonus = Math.sqrt(
-              Math.max(prev_distance - ANGLE_BONUS_SCALE, 0.0) *
+          angleBonus = Math.sqrt(
+              Math.max(prevDistance - ANGLE_BONUS_SCALE, 0.0) *
               Math.pow(Math.sin(angle - AIM_ANGLE_BONUS_BEGIN), 2.0) *
               Math.max(distance - ANGLE_BONUS_SCALE, 0.0)
           );
           result =
-            (1.5 * Math.pow(Math.max(0.0, angle_bonus), 0.99)) /
-            Math.max(AIM_TIMING_THRESHOLD, prev_strain_time);
+            (1.5 * Math.pow(Math.max(0.0, angleBonus), 0.99)) /
+            Math.max(AIM_TIMING_THRESHOLD, prevStrainTime);
         }
-        const weighted_distance = Math.pow(distance, 0.99);
+        const weightedDistance = Math.pow(distance, 0.99);
         return Math.max(
             result +
-            weighted_distance / Math.max(AIM_TIMING_THRESHOLD, strain_time),
-            weighted_distance / strain_time
+            weightedDistance / Math.max(AIM_TIMING_THRESHOLD, strainTime),
+            weightedDistance / strainTime
         );
       }
       case DIFF_SPEED: {
         distance = Math.min(distance, SINGLE_SPACING);
-        delta_time = Math.max(delta_time, MAX_SPEED_BONUS);
-        let speed_bonus = 1.0;
-        if (delta_time < MIN_SPEED_BONUS) {
-          speed_bonus += Math.pow((MIN_SPEED_BONUS - delta_time) / 40.0, 2);
+        deltaTime = Math.max(deltaTime, MAX_SPEED_BONUS);
+        let speedBonus = 1.0;
+        if (deltaTime < MIN_SPEED_BONUS) {
+          speedBonus += Math.pow((MIN_SPEED_BONUS - deltaTime) / 40.0, 2);
         }
-        angle_bonus = 1.0;
+        angleBonus = 1.0;
         if (angle !== null && angle < SPEED_ANGLE_BONUS_BEGIN) {
           const s = Math.sin(1.5 * (SPEED_ANGLE_BONUS_BEGIN - angle));
-          angle_bonus += Math.pow(s, 2) / 3.57;
+          angleBonus += Math.pow(s, 2) / 3.57;
           if (angle < Math.PI / 2.0) {
-            angle_bonus = 1.28;
+            angleBonus = 1.28;
             if (distance < ANGLE_BONUS_SCALE && angle < Math.PI / 4.0) {
-              angle_bonus +=
-                (1.0 - angle_bonus) *
+              angleBonus +=
+                (1.0 - angleBonus) *
                 Math.min((ANGLE_BONUS_SCALE - distance) / 10.0, 1.0);
             } else if (distance < ANGLE_BONUS_SCALE) {
-              angle_bonus +=
-                (1.0 - angle_bonus) *
+              angleBonus +=
+                (1.0 - angleBonus) *
                 Math.min((ANGLE_BONUS_SCALE - distance) / 10.0, 1.0) *
                 Math.sin(((Math.PI / 2.0 - angle) * 4.0) / Math.PI);
             }
           }
         }
         return (
-          ((1 + (speed_bonus - 1) * 0.75) *
-            angle_bonus *
-            (0.95 + speed_bonus * Math.pow(distance / SINGLE_SPACING, 3.5))) /
-          strain_time
+          ((1 + (speedBonus - 1) * 0.75) *
+            angleBonus *
+            (0.95 + speedBonus * Math.pow(distance / SINGLE_SPACING, 3.5))) /
+          strainTime
         );
       }
     }
-    throw {
-      name: 'NotImplementedError',
-      message: 'this difficulty type does not exist',
-    };
+    throw new Error('Not Implemented');
   }
   // _(internal)_
   // calculate a single strain and store it in the diffobj
-  _calc_strain(type, diffobj, prev_diffobj, speed_mul) {
+
+  /**
+   *
+   *
+   * @param {*} type
+   * @param {*} diffobj
+   * @param {*} prevDiffobj
+   * @param {*} speedMul
+   * @memberof std_diff
+   */
+  _calcStrain(type, diffobj, prevDiffobj, speedMul) {
     const obj = diffobj.obj;
-    const prev_obj = prev_diffobj.obj;
+    const prevObj = prevDiffobj.obj;
     let value = 0.0;
-    const time_elapsed = (obj.time - prev_obj.time) / speed_mul;
-    const decay = Math.pow(DECAY_BASE[type], time_elapsed / 1000.0);
-    diffobj.delta_time = time_elapsed;
+    const timeElapsed = (obj.time - prevObj.time) / speedMul;
+    const decay = Math.pow(DECAY_BASE[type], timeElapsed / 1000.0);
+    diffobj.delta_time = timeElapsed;
     if ((obj.type & (Objtypes.slider | Objtypes.circle)) != 0) {
-      const distance = vec_len(vec_sub(diffobj.normpos, prev_diffobj.normpos));
+      const distance = vecLen(vecSub(diffobj.normpos, prevDiffobj.normpos));
       diffobj.d_distance = distance;
       if (type == DIFF_SPEED) {
         diffobj.is_single = distance > SINGLE_SPACING;
       }
-      value = this._spacing_weight(
+      value = this._spacingWeight(
           type,
           distance,
-          time_elapsed,
-          prev_diffobj.d_distance,
-          prev_diffobj.delta_time,
+          timeElapsed,
+          prevDiffobj.d_distance,
+          prevDiffobj.delta_time,
           diffobj.angle
       );
       value *= WEIGHT_SCALING[type];
     }
-    diffobj.strains[type] = prev_diffobj.strains[type] * decay + value;
+    diffobj.strains[type] = prevDiffobj.strains[type] * decay + value;
   }
   // _(internal)_
   // calculate a specific type of difficulty
@@ -458,33 +612,42 @@ class std_diff {
   //
   // also don't forget to manually add the peak strain for the last
   // section which would otherwise be ignored
-  _calc_individual(type, diffobjs, speed_mul) {
+
+  /**
+   *
+   * @param {*} type
+   * @param {*} diffobjs
+   * @param {*} speedMul
+   * @return {*}
+   * @memberof std_diff
+   */
+  _calcIndividual(type, diffobjs, speedMul) {
     const strains = [];
-    const strain_step = STRAIN_STEP * speed_mul;
-    let interval_end =
-      Math.ceil(diffobjs[0].obj.time / strain_step) * strain_step;
-    let max_strain = 0.0;
+    const strainStep = STRAIN_STEP * speedMul;
+    let intervalEnd =
+      Math.ceil(diffobjs[0].obj.time / strainStep) * strainStep;
+    let maxStrain = 0.0;
     let i;
     for (i = 0; i < diffobjs.length; ++i) {
       if (i > 0) {
-        this._calc_strain(type, diffobjs[i], diffobjs[i - 1], speed_mul);
+        this._calcStrain(type, diffobjs[i], diffobjs[i - 1], speedMul);
       }
-      while (diffobjs[i].obj.time > interval_end) {
-        strains.push(max_strain);
+      while (diffobjs[i].obj.time > intervalEnd) {
+        strains.push(maxStrain);
         if (i > 0) {
           const decay = Math.pow(
               DECAY_BASE[type],
-              (interval_end - diffobjs[i - 1].obj.time) / 1000.0
+              (intervalEnd - diffobjs[i - 1].obj.time) / 1000.0
           );
-          max_strain = diffobjs[i - 1].strains[type] * decay;
+          maxStrain = diffobjs[i - 1].strains[type] * decay;
         } else {
-          max_strain = 0.0;
+          maxStrain = 0.0;
         }
-        interval_end += strain_step;
+        intervalEnd += strainStep;
       }
-      max_strain = Math.max(max_strain, diffobjs[i].strains[type]);
+      maxStrain = Math.max(maxStrain, diffobjs[i].strains[type]);
     }
-    strains.push(max_strain);
+    strains.push(maxStrain);
     let weight = 1.0;
     let total = 0.0;
     let difficulty = 0.0;
@@ -503,46 +666,63 @@ class std_diff {
   // calc as if everything was the same circlesize.
   //
   // this creates a scaling vector that normalizes positions
-  _normalizer_vector(circlesize) {
+
+  /**
+   *
+   *
+   * @param {*} circlesize
+   * @return {*}
+   * @memberof std_diff
+   */
+  _normalizerVector(circlesize) {
     const radius =
       (PLAYFIELD_SIZE[0] / 16.0) * (1.0 - (0.7 * (circlesize - 5.0)) / 5.0);
-    let scaling_factor = 52.0 / radius;
+    let scalingFactor = 52.0 / radius;
     // high circlesize (small circles) bonus
     if (radius < CIRCLESIZE_BUFF_THRESHOLD) {
-      scaling_factor *=
+      scalingFactor *=
         1.0 + Math.min(CIRCLESIZE_BUFF_THRESHOLD - radius, 5.0) / 50.0;
     }
-    return [scaling_factor, scaling_factor];
+    return [scalingFactor, scalingFactor];
   }
   // _(internal)_
   // initialize diffobjs (or reset if already initialized) and
   // populate it with the normalized position of the map's
   // objects
-  _init_objects(diffobjs, map, circlesize) {
+
+  /**
+   *
+   *
+   * @param {*} diffobjs
+   * @param {*} map
+   * @param {*} circlesize
+   * @memberof std_diff
+   */
+  _initObjects(diffobjs, map, circlesize) {
     if (diffobjs.length != map.objects.length) {
       diffobjs.length = map.objects.length;
     }
-    const scaling_vec = this._normalizer_vector(circlesize);
-    const normalized_center = vec_mul(PLAYFIELD_CENTER, scaling_vec);
+    const scalingVec = this._normalizerVector(circlesize);
+    const normalizedCenter = vecMul(PLAYFIELD_CENTER, scalingVec);
     for (let i = 0; i < diffobjs.length; ++i) {
       if (!diffobjs[i]) {
-        diffobjs[i] = new std_diff_hitobject(map.objects[i]);
+        diffobjs[i] = new StdDiffHitobject(map.objects[i]);
       } else {
         diffobjs[i].reset();
       }
-      var pos;
+      // let pos;
       const obj = diffobjs[i].obj;
       if (obj.type & Objtypes.spinner) {
-        diffobjs[i].normpos = normalized_center.slice();
+        diffobjs[i].normpos = normalizedCenter.slice();
       } else if (obj.type & (Objtypes.slider | Objtypes.circle)) {
-        diffobjs[i].normpos = vec_mul(obj.data.pos, scaling_vec);
+        diffobjs[i].normpos = vecMul(obj.data.pos, scalingVec);
       }
       if (i >= 2) {
         const prev1 = diffobjs[i - 1];
         const prev2 = diffobjs[i - 2];
-        const v1 = vec_sub(prev2.normpos, prev1.normpos);
-        const v2 = vec_sub(diffobjs[i].normpos, prev1.normpos);
-        const dot = vec_dot(v1, v2);
+        const v1 = vecSub(prev2.normpos, prev1.normpos);
+        const v2 = vecSub(diffobjs[i].normpos, prev1.normpos);
+        const dot = vecDot(v1, v2);
         const det = v1[0] * v2[1] - v1[1] * v2[0];
         diffobjs[i].angle = Math.abs(Math.atan2(det, dot));
       } else {
@@ -568,7 +748,17 @@ const AIM_ANGLE_BONUS_BEGIN = Math.PI / 3;
 
 // generic difficulty calculator that creates and uses
 // mode-specific calculators based on the map's mode field
-class diff {
+
+/**
+ *
+ *
+ * @class diff
+ */
+class Diff {
+  /**
+   *Creates an instance of diff.
+   * @memberof diff
+   */
   constructor() {
     // calculators for different modes are cached for reuse within
     // this instance
@@ -585,6 +775,14 @@ class diff {
   // see gamemode-specific calculators above for params
   //
   // returns the chosen gamemode-specific difficulty calculator
+
+  /**
+   *
+   *
+   * @param {*} params
+   * @return {*}
+   * @memberof diff
+   */
   calc(params) {
     let calculator;
     const map = (this.map = params.map || this.map);
@@ -594,13 +792,10 @@ class diff {
     if (!this.calculators[map.mode]) {
       switch (map.mode) {
         case modes.std:
-          calculator = new std_diff();
+          calculator = new StdDiff();
           break;
         default:
-          throw {
-            name: 'NotImplementedError',
-            message: 'this gamemode is not yet supported',
-          };
+          throw new Error('Not Implemented');
       }
       this.calculators[map.mode] = calculator;
     } else {
@@ -612,8 +807,8 @@ class diff {
 
 module.exports = {
   modbits: modbits,
-  std_diff: std_diff,
-  std_beatmap_stats: std_beatmap_stats,
-  std_diff_hitobject: std_diff_hitobject,
-  diff: diff,
+  StdDiff: StdDiff,
+  StdBeatmapStats: StdBeatmapStats,
+  StdDiffHitobject: StdDiffHitobject,
+  Diff: Diff,
 };
