@@ -7,7 +7,7 @@ const {Hitobject, Objtypes, Circle, Slider} = require('./hitobjects');
 /**
  * partial .osu file parser built around pp calculation
  */
-class parser {
+class Parser {
   /**
    *
    */
@@ -138,6 +138,7 @@ class parser {
    *
    */
   _warn() {
+    // eslint-disable-next-line prefer-rest-params
     log.warn.apply(null, Array.prototype.slice.call(arguments));
     log.warn(this.toString());
   }
@@ -290,5 +291,5 @@ class parser {
 }
 
 module.exports = {
-  parser: parser,
+  Parser: Parser,
 };
