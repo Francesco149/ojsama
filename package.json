@@ -34,6 +34,7 @@
     "ojsama.js",
     "ojsama.min.js",
     "ojsama.min.map",
+    "ojsama.d.ts",
     "download_suite",
     "update_doc",
     "UNLICENSE"
