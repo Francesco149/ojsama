@@ -215,7 +215,7 @@ if (typeof exports !== "undefined") {
 
 osu.VERSION_MAJOR = 1;
 osu.VERSION_MINOR = 2;
-osu.VERSION_PATCH = 1;
+osu.VERSION_PATCH = 2;
 
 // internal utilities
 // ----------------------------------------------------------------
@@ -593,8 +593,8 @@ parser.prototype._warn = function() {
 
 parser.prototype._property = function() {
   var s = this.curline.split(":", 2);
-  s[0] = this._setpos(s[0]);
-  s[1] = this._setpos(s[1]);
+  s[0] = s[0] && this._setpos(s[0]);
+  s[1] = s[1] && this._setpos(s[1]);
   return s;
 };
 
