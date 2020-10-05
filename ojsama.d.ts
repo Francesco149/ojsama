@@ -227,7 +227,7 @@ export declare class std_ppv2 {
     aim: number;
     speed: number;
     acc: number;
-    computer_accuracy?: std_accuracy;
+    computed_accuracy?: std_accuracy;
     total: number;
 
     calc(params: {
