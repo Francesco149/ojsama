@@ -1631,12 +1631,14 @@ std_ppv2.prototype.calc = function(params) {
 
   // high/low ar bonus
 
-  var ar_bonus = 1.0;
+  var ar_bonus = 0.0;
   if (mapstats.ar > 10.33) {
-    ar_bonus += 0.3 * (mapstats.ar - 10.33);
+    ar_bonus += 0.4 * (mapstats.ar - 10.33);
   } else if (mapstats.ar < 8.0) {
-    ar_bonus += 0.01 * (8.0 - mapstats.ar);
+    ar_bonus += 0.1 * (8.0 - mapstats.ar);
   }
+
+  ar_bonus = 1.0 + Math.min(ar_bonus, ar_bonus * (nobjects / 1000.0));
 
   // aim pp
 
