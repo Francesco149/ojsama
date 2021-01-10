@@ -77,6 +77,8 @@ export declare class beatmap {
     artist_unicode: string;
     creator: string;
     version: string;
+    beatmapId?: number;
+    beatmapsetId?: number;
     ar?: number;
     cs: number;
     od: number;
