@@ -621,6 +621,12 @@ parser.prototype._metadata = function() {
   case "Version":
     this.map.version = p[1];
     break;
+  case "BeatmapID":
+    this.map.beatmapId = parseInt(p[1]);
+    break;
+  case "BeatmapSetID":
+    this.map.beatmapsetId = parseInt(p[1]);
+    break;
   }
 };
 
