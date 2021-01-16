@@ -1611,7 +1611,6 @@ std_ppv2.prototype.calc = function(params) {
     length_bonus += Math.log10(nobjects_over_2k) * 0.5;
   }
 
-  var miss_penality = Math.pow(0.97, nmiss);
   var combo_break = Math.pow(combo, 0.8) / Math.pow(max_combo, 0.8);
   var mapstats = (
     new std_beatmap_stats({ar: base_ar, od: base_od}).with_mods(mods)
@@ -1626,6 +1625,8 @@ std_ppv2.prototype.calc = function(params) {
   n300 = this.computed_accuracy.n300;
   n100 = this.computed_accuracy.n100;
   n50 = this.computed_accuracy.n50;
+
+  var doubletap_penalty = Math.pow(0.98, n50 < nobjects / 500.0 ? 0 : n50 - nobjects / 500.0);
 
   var accuracy = this.computed_accuracy.value();
 
@@ -1644,7 +1645,11 @@ std_ppv2.prototype.calc = function(params) {
 
   var aim = this._base(aim_stars);
   aim *= length_bonus;
-  aim *= miss_penality;
+
+  if (nmiss > 0) {
+    aim *= 0.97 * Math.pow(1 - Math.pow(nmiss / nobjects, 0.775), nmiss);
+  }
+
   aim *= combo_break;
   aim *= ar_bonus;
 
@@ -1679,17 +1684,19 @@ std_ppv2.prototype.calc = function(params) {
 
   var speed = this._base(speed_stars);
   speed *= length_bonus;
-  speed *= miss_penality;
+
+  if (nmiss > 0) {
+    speed *= 0.97 * Math.pow(1 - Math.pow(nmiss / nobjects, 0.775), Math.pow(nmiss, 0.875));
+  }
+
+  speed *= doubletap_penalty;
   speed *= combo_break;
   if (mapstats.ar > 10.33) {
     speed *= ar_bonus;
   }
   speed *= hd_bonus;
 
-  // similar to aim acc and od bonus
-
-  speed *= 0.02 + accuracy;
-  speed *= 0.96 + od_squared / 1600.0;
+  speed *= (0.95 + od_squared / 750) * Math.pow(accuracy, (14.5 - Math.max(mapstats.od, 8)) / 2);
 
   this.speed = speed;
 
@@ -1735,8 +1742,8 @@ std_ppv2.prototype.calc = function(params) {
   // total pp
 
   var final_multiplier = 1.12;
-  if (mods & modbits.nf) final_multiplier *= 0.90;
-  if (mods & modbits.so) final_multiplier *= 0.95;
+  if (mods & modbits.nf) final_multiplier *= Math.max(0.9, 1.0 - 0.02 * nmiss);
+  if (mods & modbits.so) final_multiplier *= 1.0 - Math.pow(nspinners / nobjects, 0.85);
 
   this.total = Math.pow(
     Math.pow(aim, 1.1) + Math.pow(speed, 1.1) +
