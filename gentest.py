@@ -161,7 +161,7 @@ scores = []
 if args.input_file == None:
     # fetch a fresh test suite from osu api
     top_players = [
-        124493, 4787150, 2558286, 1777162, 2831793, 50265
+        4504101, 7562902, 6447454, 4787150, 11367222, 5339515, 8179335, 4196808, 4650315
     ]
 
     osu = httplib.HTTPSConnection('osu.ppy.sh')
@@ -170,27 +170,28 @@ if args.input_file == None:
         params = { 'u': u, 'limit': 100, 'type': 'id' }
         scores += osu_get(osu, 'get_user_best', params)
 
-    params = { 'm': 0, 'since': '2015-11-26' }
-    maps = osu_get(osu, 'get_beatmaps', params)
+    # TODO: uncomment when everything is recalced
+    #params = { 'm': 0, 'since': '2015-11-26' }
+    #maps = osu_get(osu, 'get_beatmaps', params)
 
-    for m in maps:
-        params = { 'b': m['beatmap_id'] }
-        map_scores = osu_get(osu, 'get_scores', params)
+    #for m in maps:
+    #    params = { 'b': m['beatmap_id'] }
+    #    map_scores = osu_get(osu, 'get_scores', params)
 
-        if len(map_scores) == 0:
-            sys.stderr.write('W: map has no scores???\n')
-            continue
+    #    if len(map_scores) == 0:
+    #        sys.stderr.write('W: map has no scores???\n')
+    #        continue
 
-        # note: api also returns qualified and loved, so ignore
-        # maps that don't have pp in rankings
-        if not 'pp' in map_scores[0]:
-            sys.stderr.write('W: ignoring loved/qualified map\n')
-            continue
+    #    # note: api also returns qualified and loved, so ignore
+    #    # maps that don't have pp in rankings
+    #    if not 'pp' in map_scores[0]:
+    #        sys.stderr.write('W: ignoring loved/qualified map\n')
+    #        continue
 
-        for s in map_scores:
-            s['beatmap_id'] = m['beatmap_id']
+    #    for s in map_scores:
+    #        s['beatmap_id'] = m['beatmap_id']
 
-        scores += map_scores
+    #    scores += map_scores
 
 
     with open(args.output_file, 'w+') as f:
@@ -246,7 +247,7 @@ for s in scores:
     )
 
     # don't include identical scores by different people
-    s = hashlib.sha1(line).digest()
+    s = hashlib.sha1(line.encode('utf-8')).digest()
     if s in seen_hashes:
         continue
 
