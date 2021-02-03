@@ -213,9 +213,9 @@ if (typeof exports !== "undefined") {
 
 (function() {
 
-osu.VERSION_MAJOR = 1;
-osu.VERSION_MINOR = 2;
-osu.VERSION_PATCH = 5;
+osu.VERSION_MAJOR = 2;
+osu.VERSION_MINOR = 0;
+osu.VERSION_PATCH = 0;
 
 // internal utilities
 // ----------------------------------------------------------------
