@@ -4,13 +4,10 @@ node_js:
   - "iojs"
   - "7"
   - "6"
-  - "5"
   - "4"
   - "lts/*"
 matrix:
   include:
-    - os: linux
-      dist: precise
     - os: linux
       dist: trusty
     - os: osx
