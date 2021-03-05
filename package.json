@@ -1,6 +1,6 @@
 {
   "name": "ojsama",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "pp and difficulty calculator for osu! in pure javascript",
   "main": "ojsama.js",
   "directories": {
