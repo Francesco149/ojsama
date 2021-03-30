@@ -1029,6 +1029,10 @@ std_diff.prototype.calc = function(params) {
     throw new TypeError("no map given");
   }
 
+  map.objects.sort(function(a, b) {
+    return a.time - b.time;
+  });
+
   var mods = this.mods = params.mods || this.mods;
   var singletap_threshold = this.singletap_threshold
     = params.singletap_threshold || singletap_threshold;
